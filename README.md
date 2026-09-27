@@ -1,14 +1,14 @@
 # Two-channel geometric block
 
-A geometric residue block that keeps two facts separate: which neighbors matter, and how much interaction evidence is present.
+Softmax returns the same vector whether two neighbors carry it or twenty. I added a second channel that sums the evidence instead of averaging it. I kept the channel because it beat geometric softmax and geometric softmax plus a neighbor count. A count by itself did not.
 
-On a synthetic task where the label is a signed sum over a query-selected neighborhood, the gated vector sum beat geometric softmax and geometric softmax plus a neighbor count. Splitting those channels into same-chain and cross-chain then beat the unsplit block when the label was the product of the two sums.
+I then split those channels into same-chain and cross-chain. On a task whose label is the product of the two sums, the split won.
 
-The block is defined in [hypothesis.md](hypothesis.md). The decision rule and the full write-up are in [experiments.md](experiments.md).
+The definition is in [hypothesis.md](hypothesis.md). The decision rule is in [experiments.md](experiments.md).
 
 ## Results
 
-Stage 1. Held-out mean squared error, three seeds, 1200 steps. A zero predictor scores 4.299. Lower is better.
+Stage 1. Held-out mean squared error, three seeds, 1200 steps. A predictor that always says zero scores 4.299. Lower is better.
 
 | Variant | What it tests | MSE |
 |---|---|---|
@@ -18,7 +18,7 @@ Stage 1. Held-out mean squared error, three seeds, 1200 steps. A zero predictor 
 | D | Softmax plus gated vector sum | 0.149 ± 0.016 |
 | C | Gated vector sum only | 0.122 ± 0.006 |
 
-An ungated count does not fix softmax. A gated scalar count does not either. The vector sum does. Adding softmax on top of that sum does not help.
+The vector sum is the part that works. Putting softmax beside it does not improve on the sum alone.
 
 Variant E. The label is the product of a same-chain sum and a cross-chain sum. Chain identity is already a pair feature, so the unsplit models are allowed to use it. Label variance is 4.876.
 
@@ -28,11 +28,9 @@ Variant E. The label is the product of a same-chain sum and a cross-chain sum. C
 | D, chains mixed | 1.455 ± 0.930 |
 | E, channels split by chain | 0.301 ± 0.011 |
 
-Seed-level curves are in `results/`. These are synthetic geometric tasks. Inverse folding has not been run.
+D was uneven across seeds, and two seeds were still falling at the step limit. C had already flattened well above E. Seed curves are in `results/`.
 
-## Question
-
-If every neighbor value is the same vector, softmax returns that vector for two neighbors or for twenty. The first experiment asks whether an accumulated-evidence channel beats both geometric attention and geometric attention with a count feature. Beating softmax alone is not the claim. Cardinality-preserving attention and Principal Neighbourhood Aggregation already place a sum beside a mean.
+These are synthetic geometric tasks. I have not trained this block for inverse folding.
 
 ## Reproduce
 
@@ -45,9 +43,9 @@ python run_stage1.py
 python run_stage_e.py
 ```
 
-CPU is enough. Python 3.10 or newer. The published numbers used PyTorch 2.14.0.
+CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0.
 
-`test_block.py` checks the block's behavior: identical neighborhoods collapse under softmax, a distant node leaves the local channels unchanged, and a rigid motion leaves the scalar output unchanged.
+`test_block.py` checks behavior, not usefulness. Identical neighborhoods collapse under softmax. A distant node leaves the local channels unchanged. A rigid motion leaves the scalar output unchanged.
 
 ## Layout
 
@@ -62,7 +60,7 @@ CPU is enough. Python 3.10 or newer. The published numbers used PyTorch 2.14.0.
 
 ## Cite
 
-Use the Cite this repository button, which reads `CITATION.cff`.
+Use the Cite this repository button. It reads `CITATION.cff`.
 
 ## License
 
