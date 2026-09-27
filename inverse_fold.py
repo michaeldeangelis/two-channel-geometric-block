@@ -33,13 +33,16 @@ def _std(xs: list[float]) -> float:
 
 
 class InverseFolder(torch.nn.Module):
-    def __init__(self, variant: str, hidden: int):
+    def __init__(self, variant: str, hidden: int, geometry: bool = True):
         super().__init__()
+        self.geometry = geometry
         self.lift = torch.nn.Linear(H_NODE, H_DIM)
         self.block = TwoChannelBlock(H_DIM, MSG, MSG, hidden, variant, radius=RADIUS_A)
         self.aa = torch.nn.Linear(H_DIM, len(AA))
 
     def logits(self, pos, mask, chain, resseq) -> torch.Tensor:
+        if not self.geometry:
+            pos = torch.zeros_like(pos)
         ang = (2 * math.pi) * resseq / 32.0
         node = torch.stack(
             [
@@ -112,12 +115,63 @@ def loss_and_scores(logits: torch.Tensor, batch: dict[str, torch.Tensor]) -> dic
             return float("nan")
         return float((correct & sel).sum() / denom)
 
-    nll = float((logp.detach() * mask).sum() / mask.sum().clamp_min(1))
+    def mean_nll(sel: torch.Tensor) -> float:
+        denom = int(sel.sum())
+        if denom == 0:
+            return float("nan")
+        return float((logp.detach() * sel).sum() / denom)
+
+    interface = mask & batch["interface"]
+    n = int(mask.sum())
+    n_interface = int(interface.sum())
     return {
-        "nll": nll,
+        "nll": mean_nll(mask),
         "recovery": rate(mask),
-        "interface": rate(mask & batch["interface"]),
+        "interface": rate(interface),
         "noninterface": rate(mask & ~batch["interface"]),
+        "interface_nll": mean_nll(interface),
+        "noninterface_nll": mean_nll(mask & ~batch["interface"]),
+        "n": n,
+        "n_correct": int((correct & mask).sum()),
+        "n_interface": n_interface,
+        "n_interface_correct": int((correct & interface).sum()),
+        "nll_sum": float((logp.detach() * mask).sum()),
+        "interface_nll_sum": float((logp.detach() * interface).sum()) if n_interface else 0.0,
+    }
+
+
+def train_background(complexes: list[dict]) -> dict[str, float]:
+    """Training-set amino-acid frequencies. No geometry."""
+    counts = torch.zeros(len(AA))
+    for comp in complexes:
+        for part in comp["chains"]:
+            for aa in part["seq"]:
+                counts[AA_INDEX[aa]] += 1
+    freq = counts / counts.sum().clamp_min(1)
+    mode = int(freq.argmax())
+    return {"freq": freq, "mode": mode, "mode_aa": AA[mode]}
+
+
+def frequency_scores(batch: dict[str, torch.Tensor], background: dict) -> dict[str, float]:
+    freq = background["freq"].to(batch["target"].device)
+    logits = freq.clamp_min(1e-8).log().view(1, 1, -1).expand(
+        batch["target"].shape[0], batch["target"].shape[1], -1
+    )
+    return loss_and_scores(logits, batch)
+
+
+def prediction_mix(logits: torch.Tensor, batch: dict[str, torch.Tensor]) -> dict[str, list[float]]:
+    """Argmax rates and mean softmax, over masked residues only."""
+    mask = batch["mask"]
+    pred = logits.argmax(dim=-1)
+    chosen = pred[mask]
+    counts = torch.bincount(chosen, minlength=len(AA)).to(torch.float)
+    rates = counts / counts.sum().clamp_min(1)
+    probs = torch.softmax(logits, dim=-1)
+    mean_p = (probs * mask.unsqueeze(-1)).sum(dim=(0, 1)) / mask.sum().clamp_min(1)
+    return {
+        "argmax_freq": [float(x) for x in rates],
+        "mean_softmax": [float(x) for x in mean_p],
     }
 
 

@@ -127,3 +127,61 @@ Same non-overlapping-seed screen as Stage 1, now applied in the direction of hig
 That does not prove the unsplit block is a more powerful representation. S and E both reached interface recovery near 0.18–0.19 at step 50, then fell. At the preregistered budget they had lost that gain while the unsplit models held. D's extra 200 steps made it worse, not better (recovery 0.102, interface 0.149 at step 400). Extra optimization time does not rescue the hybrid, and it does not explain the split's loss.
 
 Absolute skill is small. The best NLL is still close to ln(20). Fifteen training complexes cannot support a claim about protein modeling in general. They can support the narrower claim this stage asked for: on multichain inverse folding, with amino-acid identity kept out of the features and homologs kept out of the test split, the chain split did not help and attention did not help. The synthetic inductive bias did not transfer.
+
+This is not a SolubleMPNN result.
+
+## How to read Stage 3
+
+The numbers above stand. Several readings do not.
+
+C and D overlapping is the firm part: at this budget, attention had no demonstrated benefit. S and E trailing their unsplit counterparts is also a result about the implementations that were trained, including the width those branches received when the parameter counts were matched. It is not a proof that a chain split cannot represent an interface.
+
+C's edge over A cleared the old seed screen by about 0.001. That is too thin to call an architectural win, and the interface ranges overlapped. Uniform guessing is a weak baseline, because amino-acid frequencies are unequal. Three seeds measure training variability. They do not measure uncertainty across proteins. The five test complexes were the independent units, and they have now been used to choose an architecture, so they are retired from being the final test.
+
+The curves do not by themselves say why recovery fell. A later step with worse validation and better training loss would be overfitting. Both getting worse would be optimization. D's extra 200 steps showed that extending that run did not help. They did not show that the hybrid had been optimized. A shift toward common amino acids can also move recovery. That needs the training loss, the validation NLL, and the predicted residue mix.
+
+A categorical amino acid is one output. It can still depend on several distinct inputs. The output format does not explain the split.
+
+## Stage 5 — C versus A on new families
+
+S and E are paused. D is trained as a control at the same budget, not as the comparison. The question is whether the unsplit gated sum beats geometric softmax on complexes that did not choose the architecture.
+
+Rules fixed before the run:
+
+- Train, validation, and test are whole homology clusters. The Stage 3 test ids (`7OWD`, `7S6O`, `7MIC`, `7QGS`, `7LVS`) are forced into train. An audit must show no chain, in either order, shares 30% identity or more with a chain in another partition. The identity is the best ungapped window on the shorter chain.
+- The checkpoint is the lowest unweighted mean of per-complex validation NLL. Test complexes are scored once, at that checkpoint.
+- The primary summary is the paired per-complex difference, each complex one vote. Seed standard deviation is training variability only.
+- F is the training-set amino-acid frequency: NLL uses those frequencies, recovery uses the most common training residue.
+- Z is C with coordinates set to zero. Chain id and sequence index remain. It asks whether the block is using 3D distance.
+- Parameter counts for A, C, and D are matched to the same rule as before. Z uses C's width, so it has C's parameter count.
+- This is still not a SolubleMPNN comparison.
+
+Ran on CPU after those rules were written. Record: `results/scale.json`. 72 heterodimers, 46 clusters. Split 44 train / 14 validation / 14 test. Worst cross-partition identity 0.255. The five Stage 3 test ids are in train. Checkpoint on validation NLL, then one look at the test complexes. `±` below, when it describes complexes, is the sample standard deviation across the 14 test complexes. Seed standard deviations are labeled separately and are training variability only.
+
+Training-set frequencies put leucine at 0.097. That constant predictor is F. Uniform NLL is ln(20) ≈ 2.996. Parameter counts: A 23561, C 22278, Z 22278, D 24442.
+
+| Model | Test NLL | Recovery | Interface NLL |
+|---|---|---|---|
+| F training frequencies | 2.920 ± 0.045 | 0.096 ± 0.037 | 2.932 ± 0.077 |
+| A geometric softmax | 2.916 ± 0.051 | 0.096 ± 0.024 | 2.947 ± 0.113 |
+| C gated sum | 2.893 ± 0.038 | 0.100 ± 0.019 | 2.936 ± 0.124 |
+| Z gated sum, coordinates removed | 2.932 ± 0.030 | 0.089 ± 0.031 | 2.952 ± 0.066 |
+| D hybrid, control | 2.892 ± 0.040 | 0.100 ± 0.026 | — |
+
+Paired C minus A, one vote per complex, seeds averaged first:
+
+| Difference | Mean | Across complexes | Complexes favoring C |
+|---|---|---|---|
+| NLL | −0.023 | 0.027 | 13/14 |
+| Recovery | +0.004 | 0.016 | 8/14 |
+| Interface NLL | −0.011 | 0.055 | 9/14 |
+
+The NLL direction is consistent. The size is small: 0.023 nats, against a complex-to-complex scatter of 0.027. The one complex where A won is `7T8I` (+0.036). Recovery does not show the same advantage. Interface NLL does not either.
+
+C is 0.027 nats better than F on average, and better on 11 of 14 complexes. A is 0.004 nats better than F, on 9 of 14. Most of what A appeared to learn against a uniform guess was the amino-acid frequencies. C's remaining gap over those frequencies is the part that tracks the gated sum.
+
+Z loses to C on all 14 complexes (mean NLL difference −0.039 for C minus Z) and is worse than F on 9 of 14. Zeroing the coordinates removed the advantage. Chain id and sequence index were not enough.
+
+D matches C. Attention still does not add a detectable gain. A has more parameters than C (23561 against 22278), so C's NLL edge is not a wider model.
+
+Several seeds selected a checkpoint before step 400. On those runs, validation NLL was higher at the last step. On C seed 2, Z seed 0, and D seed 2, training NLL was still falling while validation NLL rose. That is overfitting, and the test table uses the earlier checkpoint. It does not show that training had converged.

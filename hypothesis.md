@@ -53,7 +53,7 @@ h' = h + MLP(h, m_select, m_sum, log(1 + rho), m_global)
 
 ## Protein-specific variant (later)
 
-Run the two local channels separately on same-chain neighbors and on cross-interface neighbors. A residue can then represent strong internal support, strong partner support, both, or neither. That split is an empirical question, not part of the first kill test. The heterodimer screen in experiments.md ran it. The split lost.
+Run the two local channels separately on same-chain neighbors and on cross-interface neighbors. A residue can then represent strong internal support, strong partner support, both, or neither. That split is an empirical question, not part of the first kill test. The heterodimer screens in experiments.md ran it. The split lost, and it is paused. The comparison that remains is the gated sum against geometric softmax.
 
 ## Inverse folding head (later)
 
