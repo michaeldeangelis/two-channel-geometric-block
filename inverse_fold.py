@@ -32,6 +32,52 @@ def _std(xs: list[float]) -> float:
     return math.sqrt(sum((x - mean) ** 2 for x in xs) / max(len(xs) - 1, 1))
 
 
+class FrameFolder(torch.nn.Module):
+    """Three blocks, same depth as the deep encoder. Edges carry backbone frames.
+
+    structure=False zeros the geometric edge channels and leaves the 10 Å
+    graph, sequence separation, and chain identity in place.
+    """
+
+    def __init__(self, variant: str, hidden: int, geometry: bool = True, structure: bool = True, depth: int = 3, h_dim: int = 64, msg: int = 64):
+        super().__init__()
+        from frames import E_DIM
+
+        self.use_backbone = True
+        self.structure = structure and geometry
+        self.depth = depth
+        self.lift = torch.nn.Linear(H_NODE, h_dim)
+        self.blocks = torch.nn.ModuleList(
+            TwoChannelBlock(h_dim, msg, msg, hidden, variant, e_dim=E_DIM, radius=RADIUS_A)
+            for _ in range(depth)
+        )
+        self.aa = torch.nn.Linear(h_dim, len(AA))
+
+    def logits(self, pos, mask, chain, resseq, n=None, ca=None, c=None) -> torch.Tensor:
+        from frames import edge_features, zero_geometry
+
+        if n is None or c is None:
+            raise ValueError("frame folder needs N and C coordinates")
+        origin = pos if ca is None else ca
+        e, window = edge_features(n, origin, c, mask, chain, resseq, radius=RADIUS_A)
+        if not self.structure:
+            e = zero_geometry(e)
+        ang = (2 * math.pi) * resseq / 32.0
+        node = torch.stack(
+            [
+                torch.ones_like(resseq),
+                torch.sin(ang),
+                torch.cos(ang),
+                chain.to(resseq.dtype),
+            ],
+            dim=-1,
+        )
+        h = self.lift(node) * mask.unsqueeze(-1).to(node.dtype)
+        for block in self.blocks:
+            h, _ = block.encode(h, origin, mask, e_override=e, c_override=window, chain=chain, resseq=resseq)
+        return self.aa(h)
+
+
 class StackedFolder(torch.nn.Module):
     """Several gated blocks. Aggregation is still the only difference between variants."""
 
@@ -128,7 +174,8 @@ def tensor_batch(complexes: list[dict]) -> dict[str, torch.Tensor]:
                     for u, v, w in other
                 )
                 interface[i, k] = near
-    return {
+    has_backbone = all("n" in part and "c" in part for comp in complexes for part in comp["chains"])
+    out = {
         "pos": pos,
         "mask": mask,
         "chain": chain,
@@ -136,6 +183,21 @@ def tensor_batch(complexes: list[dict]) -> dict[str, torch.Tensor]:
         "target": target,
         "interface": interface,
     }
+    if has_backbone:
+        n_coord = torch.zeros(b, n, 3)
+        c_coord = torch.zeros(b, n, 3)
+        for i, comp in enumerate(complexes):
+            cursor = 0
+            for part in comp["chains"]:
+                m = len(part["seq"])
+                for k in range(m):
+                    n_coord[i, cursor + k] = torch.tensor(part["n"][k])
+                    c_coord[i, cursor + k] = torch.tensor(part["c"][k])
+                cursor += m
+        out["n"] = n_coord
+        out["ca"] = pos
+        out["c"] = c_coord
+    return out
 
 
 def loss_and_scores(logits: torch.Tensor, batch: dict[str, torch.Tensor]) -> dict[str, float]:

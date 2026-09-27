@@ -292,3 +292,32 @@ Selected steps are 800, 450, and 750 for the sum, and 800, 750, and 750 for the 
 Test NLL is 2.836 for the sum and 2.850 for the mean plus mass. The factor on the geometric mean of the correct-residue probabilities is exp(0.013) ≈ 1.013, about 1.3% higher, with the same complex weighting as the NLL. Perplexity is about 1.3% lower. exp(−0.013) is the perplexity ratio. Interface NLL differs by +0.020, interval [+0.005, +0.036], with the mean worse on 17 of 30. Recovery differs by −0.004, interval [−0.011, +0.003], which includes zero.
 
 The extra training did not close the gap. The 400-step result was not an artifact of stopping those two mean-plus-mass seeds on their last checkpoint.
+
+## Series closed
+
+The sum-versus-mean series stops here. The hybrid simplified to a gated sum. The chain split did not transfer to inverse folding. Mean plus log mass, which still contains the information needed to rebuild the sum, underperformed the sum in the one-block model and again in the three-block model, including after the budget doubled from 400 to 800 steps on the same test. That doubling is robustness on an already examined test, not a new replication. Some checkpoints still land on the last step. The budget is not extended again. Recovery was not separated. Interface likelihood favored the sum on 17 of 30 complexes at 800 steps, less consistently than the whole-complex result. Explicit reconstruction matched logits to 8.3e-7 at fixed weights. Independently trained models still differed. The gated sum is the aggregation this line keeps.
+
+## Stage 9 — frame edges, then the same substitution
+
+No further depth and no further steps on the three-block distance model. The next encoder stays three blocks wide. Each edge keeps the 10 Å CA window and adds a 16-bin radial basis on the CA distance, the neighbor CA written in the residue’s N-CA-C frame, and the relative rotation of the two frames. Sequence separation and chain identity stay in the last two channels. Amino-acid identity is still a label, not a feature.
+
+C is that encoder with the gated sum. Q is the same encoder with the normalized mean plus log mass. P is the gated sum on the same 10 Å graph with the geometric edge channels set to zero. P does not zero the coordinates, so the window does not become a complete graph. F is the training-set amino-acid frequencies. Same 400-step budget, three seeds, and validation-NLL checkpoint. The test is not used to stop. Complexes already used as validation or test stay out. If a checkpoint lands on step 400, that fact is reported and the run is not extended.
+
+Reading, fixed before the run. Whole-complex NLL is primary, with the same 95% cluster bootstrap, seeds averaged first.
+
+- If the C−F interval is not entirely below zero, this encoder has not shown a likelihood gain over composition. Q−C is then descriptive. It is not practical relevance.
+- If C beats F and the C−P interval is entirely below zero, the frame features improve on sequence separation, chain identity, and the fixed neighbor graph.
+- If C beats F and the C−P interval includes zero, the gain over composition is not pinned on the frame features.
+- Q−C is the preserved aggregation question in this new encoder and on this new split. It is not a replication of the 0.012 or 0.013 nat gaps.
+
+Ran on CPU after those rules were written. Record: `results/strong.json`. 478 of 480 complexes had a complete N, CA, and C trace. Locked split 366 train / 73 validation / 39 test, in 7 test clusters of sizes 3, 3, 4, 4, 6, 7, and 12. None of those test complexes were in an earlier validation or test split. Worst cross-partition identity 0.279. C, Q, and P each have 223,770 parameters. Depth is still 3. The interval gives each cluster equal weight.
+
+| Comparison | Effect on NLL | 95% cluster interval | Complexes |
+|---|---|---|---|
+| C − F | −0.280 | [−0.327, −0.228] | C better on 39/39 |
+| C − P | −0.218 | [−0.261, −0.169] | C better on 39/39 |
+| Q − C | +0.006 | [−0.011, +0.030] | Q worse on 15/39 |
+
+Test NLL is 2.633 for the sum, 2.634 for the mean plus mass, 2.851 with the frame channels removed, and 2.912 for training-set frequencies. The sum’s advantage over frequencies is a factor of exp(0.280) ≈ 1.32 on the geometric mean of the correct-residue probabilities, about 32% higher, and about 32% lower perplexity. Recovery is 0.176 for the sum and 0.073 for frequencies, a cluster effect of +0.107 with interval [+0.083, +0.133]. Recovery and interface NLL do not separate the sum from the mean plus mass. Those intervals include zero.
+
+Every sum seed and every mean-plus-mass seed selected step 400. The plain control selected steps 300, 400, and 400. The run is not extended. The composition gate and the frame-feature gate both pass. The aggregation comparison does not: a gap the size of the earlier 0.013 nats would sit inside this interval. Seven clusters do not establish that the sum’s advantage disappeared. They do establish that it is no longer the effect this test can see, once the encoder is using backbone frames.

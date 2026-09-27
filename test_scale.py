@@ -97,6 +97,33 @@ def _xy(comp: dict):
     return batch["pos"], batch["mask"], batch["chain"], batch["resseq"]
 
 
+def test_frame_edges_are_rigid_motions() -> None:
+    from frames import GEOM_DIM, edge_features, zero_geometry
+
+    torch.manual_seed(0)
+    n = torch.randn(1, 5, 3)
+    ca = n + torch.tensor([1.4, 0.2, 0.0])
+    c = ca + torch.tensor([0.1, 1.5, 0.0])
+    mask = torch.ones(1, 5, dtype=torch.bool)
+    chain = torch.zeros(1, 5, dtype=torch.long)
+    chain[:, 3:] = 1
+    resseq = torch.arange(5).float().view(1, -1)
+    e0, c0 = edge_features(n, ca, c, mask, chain, resseq)
+    q, _ = torch.linalg.qr(torch.randn(3, 3))
+    if torch.det(q) < 0:
+        q = q.clone()
+        q[:, 0] = -q[:, 0]
+    shift = torch.tensor([4.0, -2.0, 0.5])
+    e1, c1 = edge_features(n @ q + shift, ca @ q + shift, c @ q + shift, mask, chain, resseq)
+    if not torch.allclose(e0, e1, atol=1e-4) or not torch.allclose(c0, c1, atol=1e-5):
+        raise AssertionError(float((e0 - e1).abs().max()))
+    plain = zero_geometry(e0)
+    if float(plain[..., :GEOM_DIM].abs().max()) != 0.0:
+        raise AssertionError("geometric channels stayed on")
+    if not torch.equal(plain[..., GEOM_DIM:], e0[..., GEOM_DIM:]):
+        raise AssertionError("sequence channels changed")
+
+
 def test_log_mass_reconstruction_matches_logits() -> None:
     from inverse_fold import InverseFolder
 
@@ -158,6 +185,7 @@ def main() -> None:
     test_cluster_interval_is_constant_when_every_cluster_agrees()
     test_normalized_mean_reconstructs_the_gated_sum()
     test_log_mass_reconstruction_matches_logits()
+    test_frame_edges_are_rigid_motions()
     print("scale checks passed")
 
 

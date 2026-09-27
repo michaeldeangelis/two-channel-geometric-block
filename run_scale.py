@@ -50,13 +50,22 @@ def _std(xs: list[float]) -> float:
     return (sum((x - mean) ** 2 for x in xs) / max(len(xs) - 1, 1)) ** 0.5
 
 
+def _logits(model, batch: dict):
+    if getattr(model, "use_backbone", False):
+        return model.logits(
+            batch["pos"], batch["mask"], batch["chain"], batch["resseq"],
+            batch["n"], batch["ca"], batch["c"],
+        )
+    return model.logits(batch["pos"], batch["mask"], batch["chain"], batch["resseq"])
+
+
 def _rows(model: InverseFolder, complexes: list[dict]) -> list[dict]:
     model.eval()
     rows = []
     with torch.no_grad():
         for comp in complexes:
             batch = tensor_batch([comp])
-            logits = model.logits(batch["pos"], batch["mask"], batch["chain"], batch["resseq"])
+            logits = _logits(model, batch)
             row = loss_and_scores(logits, batch)
             mix = prediction_mix(logits, batch)
             row["id"] = comp["id"]
@@ -104,7 +113,7 @@ def train_one(name: str, variant: str, hidden: int, geometry: bool, seed: int, t
         pick = [train[order[k % len(order)]] for k in range(step - 1, step - 1 + BATCH)]
         batch = tensor_batch(pick)
         model.train()
-        logits = model.logits(batch["pos"], batch["mask"], batch["chain"], batch["resseq"])
+        logits = _logits(model, batch)
         loss = torch.nn.functional.cross_entropy(
             logits.transpose(1, 2), batch["target"], reduction="none"
         )
