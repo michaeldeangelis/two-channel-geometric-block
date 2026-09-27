@@ -1,5 +1,9 @@
 # Two-channel geometric block
 
+## Abstract
+
+I trained a small network to name each amino acid in a two-chain protein from backbone geometry, with the sequence itself hidden. Describing each neighbor with a local backbone frame, rather than a single distance, beat a guess based only on how common each amino acid is. On 24 separate protein families that gain was 0.395 nats: about 48% higher geometric-mean probability of the correct residue, and about 33% lower perplexity, on every family. Adding the neighbor messages up did not separate from averaging them while keeping their total weight. That gap was 0.009 nats, and the uncertainty range includes no difference. I kept the sum because it was better in earlier, weaker versions of this block. I did not show that the frames erased that earlier advantage. A chain split and a hybrid that also used attention were tried and dropped.
+
 On 24 new singleton families, the gated sum and the mean plus log mass are still not separated. The gap is 0.009 nats. A 95% cluster interval is −0.001 to +0.018, and the mean plus mass is worse on 17 of 24. Every test cluster has one complex, so the cluster-weighted mean and the complex-weighted mean are the same number. The sum stays the working aggregation because of the earlier results. This run does not show that it won.
 
 The same frame-edge model beats training-set frequencies by 0.395 nats on those families, interval 0.361 to 0.432, better on 24 of 24. That raises the geometric mean of the correct-residue probabilities by exp(0.395) ≈ 1.484, about 48.4% higher. Perplexity falls by exp(−0.395) ≈ 0.674, about 32.6% lower. Those two percentages are not the same. The budget was 800 steps, set from the earlier validation curves before this test was scored. One sum seed and two mean-plus-mass seeds are still best at step 800. The run stops. Record: `results/families.json`.
