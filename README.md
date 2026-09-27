@@ -1,42 +1,33 @@
 # Two-channel geometric block
 
-On 14 heterodimer families that did not choose the architecture, a gated sum beat geometric softmax on negative log-likelihood for 13. The mean gap was 0.023 nats. Recovery did not move, and the interface did not either.
+On a locked test of 48 homology clusters, the gated sum beat geometric softmax by 0.033 nats of whole-complex negative log-likelihood. A cluster bootstrap put that gap between 0.027 and 0.039 nats. That is about 3.2% lower perplexity. Recovery moved by half a percentage point.
 
-A chain split had already lost on an earlier screen. I paused it. Attention still matches the gated sum and does not improve it.
-
-Most of the gap against a uniform guess was amino-acid frequency. Leucine is 0.097 of the training residues, and predicting it recovers 0.096 with no coordinates. Softmax was 0.004 nats better than that table. The gated sum was 0.027 nats better. Setting every coordinate to zero removed the gain.
+The 14 complexes that originally favored the gated sum were not in this test. They stayed in the training record. Attention was not retrained. The chain split stays paused.
 
 The definition is in [hypothesis.md](hypothesis.md). The decision rule and the reading of each result are in [experiments.md](experiments.md).
 
-## New families
+## Locked test
 
-72 PDB heterodimers, 46 homology clusters, split 44 / 14 / 14 into train, validation, and test. Whole clusters only. The five complexes from the first inverse-folding screen stayed in train. Worst cross-partition identity was 0.255, measured as the best ungapped window on the shorter chain, either chain against either chain. The checkpoint is the lowest unweighted mean of per-complex validation NLL. Test complexes were scored once. `±` in this table is the sample standard deviation across the 14 test complexes. Seed standard deviation is training variability and is in `results/scale.json`. Uniform NLL is ln(20) ≈ 2.996.
+240 PDB heterodimers, 106 clusters. Split 142 / 50 / 48 into train, validation, and test, written down before training. Every test cluster is one complex. Worst cross-partition identity was 0.275. Whole-complex NLL is the primary endpoint. The interval resamples clusters 2000 times and reports the 2.5 and 97.5 percentiles. It is not the standard deviation across complexes. Record: `results/confirm.json`.
 
-| Model | Test NLL | Recovery | Interface NLL |
+Widths match the development run: softmax hidden 104 (23,561 parameters), gated sum hidden 80 (22,278). Three seeds. The checkpoint is the lowest validation NLL.
+
+| Comparison | Effect | Bootstrap interval | Clusters favoring the gated sum |
 |---|---|---|---|
-| F training frequencies | 2.920 ± 0.045 | 0.096 ± 0.037 | 2.932 ± 0.077 |
-| A geometric softmax | 2.916 ± 0.051 | 0.096 ± 0.024 | 2.947 ± 0.113 |
-| C gated sum | 2.893 ± 0.038 | 0.100 ± 0.019 | 2.936 ± 0.124 |
-| Z gated sum, coordinates removed | 2.932 ± 0.030 | 0.089 ± 0.031 | 2.952 ± 0.066 |
-| D hybrid | 2.892 ± 0.040 | 0.100 ± 0.026 | — |
+| Gated sum − softmax, NLL | −0.033 | [−0.039, −0.027] | 45/48 |
+| Gated sum − training frequencies, NLL | −0.048 | [−0.055, −0.041] | 45/48 |
+| Gated sum − softmax, recovery | +0.006 | [+0.001, +0.010] | 30/48 |
+| Gated sum − softmax, interface NLL | −0.030 | [−0.041, −0.019] | 38/48 |
 
-Paired C minus A, seeds averaged first: NLL −0.023 (13/14), recovery +0.004 (8/14), interface NLL −0.011 (9/14). The one NLL loss is `7T8I`. A has 23,561 parameters and C has 22,278, so the NLL edge is not a wider model. Z uses C's weights shape with coordinates set to zero. Chain id and sequence index remain. C beat Z on all 14 complexes.
+Test NLL is 2.846 for the gated sum, 2.878 for softmax, and 2.894 for the training-set amino-acid frequencies. Softmax itself beats that frequency table by 0.015 nats, interval [−0.020, −0.011]. The gated sum's gap over softmax is additional. Recovery is 0.118 against 0.112, with the frequency baseline at 0.105. Interface NLL also favors the gated sum on this set. The smaller development set did not resolve the interface.
 
-Several seeds were best before the last step. On those runs validation NLL rose afterward, and on some of them training NLL was still falling. The table uses the validation checkpoint.
+A 0.033 nat drop can raise the probability of the correct residue without changing the top prediction. That is why recovery barely moves.
 
-## First inverse-folding screen
+## Development screen
 
-Twenty heterodimers, 15 train and 5 test, 200 steps, no validation checkpoint. The chain split was worse, especially at the interface. Record: `results/inverse.json`. `±` here is across three seeds.
+14 complexes, after a 44 / 14 / 14 split. The gated sum was better on NLL for 13 of 14, by 0.023 nats. The across-complex scatter of 0.027 was descriptive, not a confidence interval. Recovery and interface NLL were not resolved there. Beating the frequency table showed information beyond amino-acid composition. It did not, by itself, show that the information was geometric.
 
-| Variant | Recovery | Interface | NLL |
-|---|---|---|---|
-| A geometric softmax | 0.111 ± 0.007 | 0.153 ± 0.016 | 2.912 ± 0.007 |
-| C gated sum | 0.124 ± 0.005 | 0.158 ± 0.014 | 2.889 ± 0.007 |
-| S chain-split gated sum | 0.100 ± 0.015 | 0.104 ± 0.020 | 2.911 ± 0.005 |
-| D hybrid | 0.123 ± 0.011 | 0.162 ± 0.017 | 2.890 ± 0.011 |
-| E chain-split hybrid | 0.102 ± 0.008 | 0.107 ± 0.029 | 2.922 ± 0.011 |
-
-That screen chose the architecture, so those five test complexes are not the test set above. S and E are paused.
+The coordinate ablation zeros positions before the cutoff. Distances become 0 and every residue becomes a neighbor of every other residue, so the 10 Å graph is replaced by a complete graph. Sequence separation and chain identity remain. That run is not a proof that the ablated model saw no geometry. It was not repeated here.
 
 ## Synthetic tasks
 
@@ -52,15 +43,7 @@ Stage 1. Held-out mean squared error, three seeds, 1200 steps. A predictor that 
 
 The vector sum is the part that works. Putting softmax beside it does not improve on the sum alone. Multiplying a uniform softmax average by the neighbor count recovers an ordinary sum. It does not, in general, recover a query-selected sum. B failed anyway.
 
-The chain-split label is the product of a same-chain sum and a cross-chain sum. Label variance is 4.876.
-
-| Variant | MSE |
-|---|---|
-| C, chains mixed in one sum | 2.570 ± 0.034 |
-| D, chains mixed | 1.455 ± 0.930 |
-| E, channels split by chain | 0.301 ± 0.011 |
-
-E won that task. An unsplit vector sum can still represent the two chain sums on separate coordinates. The gap shows easier learning under that budget. It did not transfer to inverse folding.
+The chain-split label is the product of a same-chain sum and a cross-chain sum. Label variance is 4.876. The split won that task (MSE 0.301 ± 0.011 against 2.570 ± 0.034). An unsplit sum can still represent the two chain sums on separate coordinates. The gap did not transfer to inverse folding.
 
 ## Reproduce
 
@@ -75,11 +58,10 @@ python run_stage1.py
 python run_stage_e.py
 python run_inverse.py
 python run_scale.py
+python run_confirm.py
 ```
 
-CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0. The inverse-folding scripts download PDB files into `data/`, which is gitignored.
-
-`test_block.py` checks behavior, not usefulness. Identical neighborhoods collapse under softmax. A distant node leaves the local channels unchanged. A rigid motion leaves the scalar output unchanged. `test_inverse.py` checks that amino-acid labels do not change the logits. `test_scale.py` checks the homology audit, the frequency baseline, and the coordinate ablation.
+CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0. The inverse-folding scripts download PDB files into `data/`, which is gitignored. `run_confirm.py` reuses `data/split_confirm.json` if it is already there.
 
 ## Layout
 
@@ -89,14 +71,9 @@ CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0. The 
 | `synthetic.py` | Synthetic tasks |
 | `inverse_fold.py` | Heterodimer head, frequency baseline, coordinate ablation |
 | `proteins.py` | PDB fetch, homology clusters, partition audit |
-| `test_block.py` | Invariance and locality checks |
-| `test_inverse.py` | Label leakage check |
-| `test_scale.py` | Audit, frequency baseline, coordinate ablation |
-| `run_stage1.py` | Cardinality ablation |
-| `run_stage_e.py` | Synthetic chain-split ablation |
-| `run_inverse.py` | First heterodimer screen |
-| `run_scale.py` | C versus A on new families |
-| `results/` | Metrics for each seed and each complex |
+| `run_confirm.py` | Locked C versus A confirmation |
+| `run_scale.py` | Development screen on 14 complexes |
+| `results/` | Metrics for each seed, complex, and cluster |
 
 ## Cite
 

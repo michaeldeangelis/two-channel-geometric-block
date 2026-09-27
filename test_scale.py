@@ -41,6 +41,20 @@ def test_audit_rejects_a_cross_split_homolog() -> None:
         raise AssertionError("stage 3 test id landed in test")
 
 
+def test_zero_coordinates_rebuild_the_graph() -> None:
+    """A 40 Å pair is outside a 10 Å window until coordinates are zeroed."""
+    from block import pair_geometry
+
+    pos = torch.tensor([[[0.0, 0.0, 0.0], [40.0, 0.0, 0.0]]])
+    mask = torch.ones(1, 2, dtype=torch.bool)
+    _, far = pair_geometry(pos, mask, radius=10.0)
+    _, near = pair_geometry(torch.zeros_like(pos), mask, radius=10.0)
+    if float(far[0, 0, 1]) != 0.0:
+        raise AssertionError("a 40 Å pair was inside the 10 Å window")
+    if float(near[0, 0, 1]) < 0.99:
+        raise AssertionError("zero coordinates did not put the pair inside the window")
+
+
 def test_zero_coordinates_ignore_geometry() -> None:
     torch.manual_seed(0)
     seq = "ACDEFGHIKL"
@@ -83,10 +97,22 @@ def _xy(comp: dict):
     return batch["pos"], batch["mask"], batch["chain"], batch["resseq"]
 
 
+def test_cluster_interval_is_constant_when_every_cluster_agrees() -> None:
+    from run_confirm import cluster_interval
+
+    estimate = cluster_interval([[-0.02], [-0.02, -0.02]])
+    if abs(estimate["point"] + 0.02) > 1e-12:
+        raise AssertionError(estimate["point"])
+    if abs(estimate["lo"] - estimate["hi"]) > 1e-12:
+        raise AssertionError(estimate)
+
+
 def main() -> None:
     test_audit_rejects_a_cross_split_homolog()
+    test_zero_coordinates_rebuild_the_graph()
     test_zero_coordinates_ignore_geometry()
     test_frequency_baseline_uses_the_training_mode()
+    test_cluster_interval_is_constant_when_every_cluster_agrees()
     print("scale checks passed")
 
 

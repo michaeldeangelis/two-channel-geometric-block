@@ -176,12 +176,45 @@ Paired C minus A, one vote per complex, seeds averaged first:
 | Recovery | +0.004 | 0.016 | 8/14 |
 | Interface NLL | −0.011 | 0.055 | 9/14 |
 
-The NLL direction is consistent. The size is small: 0.023 nats, against a complex-to-complex scatter of 0.027. The one complex where A won is `7T8I` (+0.036). Recovery does not show the same advantage. Interface NLL does not either.
+The NLL direction is consistent. The size is small: 0.023 nats, against a complex-to-complex scatter of 0.027. That scatter describes the 14 complexes. It is not a confidence interval, and it is not a cluster-level uncertainty. The one complex where A won is `7T8I` (+0.036). Recovery does not show the same advantage. Interface NLL does not either. A drop of 0.023 nats is a perplexity ratio of exp(−0.023) ≈ 0.977, about 2.3% lower. The model can assign more probability to the correct residue without making it the argmax.
 
-C is 0.027 nats better than F on average, and better on 11 of 14 complexes. A is 0.004 nats better than F, on 9 of 14. Most of what A appeared to learn against a uniform guess was the amino-acid frequencies. C's remaining gap over those frequencies is the part that tracks the gated sum.
+C is 0.027 nats better than F on average, and better on 11 of 14 complexes. A is 0.004 nats better than F, on 9 of 14. Beating F means the model has predictive information beyond the training-set amino-acid frequencies. It does not by itself say that information is geometric. Chain length and sequence position could carry it.
 
-Z loses to C on all 14 complexes (mean NLL difference −0.039 for C minus Z) and is worse than F on 9 of 14. Zeroing the coordinates removed the advantage. Chain id and sequence index were not enough.
+Z loses to C on all 14 complexes (mean NLL difference −0.039 for C minus Z) and is worse than F on 9 of 14. Z zeros coordinates before the cutoff. Every distance feature becomes 0, and every masked pair falls inside the window, so the 10 Å neighborhood is replaced by a complete graph. Sequence separation and chain identity stay. The comparison removes explicit distances and changes which neighbors exist. It supports that those two changes matter together. It does not show that Z contains no geometry.
 
 D matches C. Attention still does not add a detectable gain. A has more parameters than C (23561 against 22278), so C's NLL edge is not a wider model.
 
 Several seeds selected a checkpoint before step 400. On those runs, validation NLL was higher at the last step. On C seed 2, Z seed 0, and D seed 2, training NLL was still falling while validation NLL rose. That is overfitting, and the test table uses the earlier checkpoint. It does not show that training had converged.
+
+## Stage 6 — confirmation on a locked test
+
+The architecture stays C. A is the geometric-softmax control. F is the training-set frequency baseline. D, Z, S, and E are not retrained.
+
+The Stage 5 validation and test complexes are a development record. They are forced into train. They are not the confirmation test.
+
+Rules fixed before the run:
+
+- Same widths as Stage 5: A at hidden 104, C at hidden 80. Same optimizer, 400 steps, three seeds, and the same validation-NLL checkpoint.
+- Whole-complex NLL is the primary endpoint. Recovery and interface NLL are secondary.
+- The split is written to disk before training. A rerun uses that split.
+- Homology clusters are the unit. A cluster's effect is the mean of its complexes. The reported effect is the mean across clusters. Uncertainty is a cluster bootstrap: 2000 resamples, clusters drawn with replacement, 2.5 and 97.5 percentiles. That interval is not the across-complex standard deviation.
+- An audit must still show no cross-partition chain at or above 30% identity, in either chain order.
+
+Ran on CPU after those rules were written. Record: `results/confirm.json`. 240 heterodimers, 106 clusters. The locked split is 142 train / 50 validation / 48 test. All 48 test clusters are singletons. Worst cross-partition identity 0.275. The 33 development ids, including the Stage 5 test, are in train and in neither validation nor test. Widths and parameter counts match Stage 5.
+
+The effect is the mean of cluster means. The interval is a 2000-draw cluster bootstrap, 2.5 and 97.5 percentiles. Because every test cluster is one complex, that resample is also a complex resample.
+
+| Comparison | Effect | Bootstrap interval | Clusters favoring C |
+|---|---|---|---|
+| C − A, whole-complex NLL | −0.033 | [−0.039, −0.027] | 45/48 |
+| C − F, whole-complex NLL | −0.048 | [−0.055, −0.041] | 45/48 |
+| C − A, recovery | +0.006 | [+0.001, +0.010] | 30/48 |
+| C − A, interface NLL | −0.030 | [−0.041, −0.019] | 38/48 |
+
+Primary endpoint: the likelihood advantage holds. exp(−0.033) ≈ 0.968, about 3.2% lower perplexity than softmax. Test NLL is 2.846 for C, 2.878 for A, and 2.894 for F. A itself beats F by 0.015, interval [−0.020, −0.011], so on this larger set softmax is no longer indistinguishable from the frequency table. C's remaining gap over A is on top of that.
+
+Recovery moves by about half a percentage point (0.118 against 0.112, frequency baseline 0.105). The interval excludes zero. The predictions are still close to the common amino acids. Interface NLL also favors C here; the Stage 5 interface comparison was too noisy to say that. It is a secondary endpoint.
+
+Checkpoints were steps 300, 350, and 400. On the earlier stops, training NLL was still falling while validation NLL had turned up. The table uses those checkpoints.
+
+This is a confirmed, small likelihood advantage for the same gated sum. It is not a useful inverse-folding model.

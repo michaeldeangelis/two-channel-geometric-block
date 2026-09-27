@@ -215,13 +215,14 @@ def split_three(
     clusters: list[list[int]],
     val_frac: float = 0.20,
     test_frac: float = 0.20,
+    force_ids: set[str] | None = None,
 ) -> dict:
-    """Whole clusters only. Stage 3 test ids are forced into train.
+    """Whole clusters only. Held-out development ids are forced into train.
 
     Validation and test are filled with the smallest remaining clusters so
     one large family does not become the entire held-out set.
     """
-    dev = set(DEV_IDS)
+    dev = set(DEV_IDS) if force_ids is None else set(force_ids)
     train: list[int] = []
     flexible: list[list[int]] = []
     for group in clusters:

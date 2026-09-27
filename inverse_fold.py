@@ -41,6 +41,10 @@ class InverseFolder(torch.nn.Module):
         self.aa = torch.nn.Linear(H_DIM, len(AA))
 
     def logits(self, pos, mask, chain, resseq) -> torch.Tensor:
+        # geometry=False zeros coordinates before the cutoff. Every pairwise
+        # distance becomes 0, so the distance feature is 0 and every masked
+        # pair falls inside the window. The 10 Å neighborhood is replaced by
+        # a complete graph. Sequence separation and chain identity stay.
         if not self.geometry:
             pos = torch.zeros_like(pos)
         ang = (2 * math.pi) * resseq / 32.0
