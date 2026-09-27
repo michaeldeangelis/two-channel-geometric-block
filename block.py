@@ -5,6 +5,8 @@ B  softmax plus ungated neighbor-count features
 C  gated sum only, plus log(1 + rho)
 D  softmax plus gated sum, plus log(1 + rho)
 R  softmax plus gated log(1 + rho), no vector sum (diagnostic)
+E  D, with same-chain and cross-chain channels kept separate
+S  C, with those channels kept separate. No attention.
 
 R is not part of the pass rule. It asks whether a gated count alone
 is doing the work of the vector sum.
@@ -31,26 +33,32 @@ def pair_geometry(
     pos: torch.Tensor,
     mask: torch.Tensor,
     chain: torch.Tensor | None = None,
+    radius: float = RADIUS,
+    resseq: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Rotation-invariant pair features and the smooth cutoff.
 
-    pos: (B, N, 2), mask: (B, N) bool, chain: (B, N) long.
-    Returns e (B, N, N, 3) = [distance, sequence separation, same-chain]
-    and c (B, N, N).
+    pos: (B, N, 3) or (B, N, 2). mask: (B, N) bool. chain, resseq: (B, N).
+    Returns e (B, N, N, 3) = [distance/radius, sequence separation, same-chain]
+    and c (B, N, N). With the default radius of 1, distance is unchanged.
     """
     b, n, _ = pos.shape
     delta = pos[:, :, None, :] - pos[:, None, :, :]
     dist = torch.linalg.norm(delta, dim=-1)
-    idx = torch.arange(n, device=pos.device, dtype=pos.dtype)
-    # Fixed scale so appending a disconnected node does not rewrite existing pairs.
-    sep = (idx[None, :] - idx[:, None]).abs() / 32.0
-    sep = sep.view(1, n, n).expand(b, n, n)
     if chain is None:
         same = torch.ones(b, n, n, device=pos.device, dtype=pos.dtype)
     else:
         same = (chain[:, :, None] == chain[:, None, :]).to(pos.dtype)
-    e = torch.stack([dist, sep, same], dim=-1)
-    c = smooth_cutoff(dist)
+    if resseq is None:
+        idx = torch.arange(n, device=pos.device, dtype=pos.dtype)
+        sep = (idx[None, :] - idx[:, None]).abs() / 32.0
+        sep = sep.view(1, n, n).expand(b, n, n)
+    else:
+        sep = (resseq[:, :, None] - resseq[:, None, :]).abs() / 32.0
+        # A cross-chain pair is not a sequence neighbor.
+        sep = torch.where(same > 0.5, sep, torch.ones_like(sep))
+    e = torch.stack([dist / radius, sep, same], dim=-1)
+    c = smooth_cutoff(dist, radius)
     valid = mask[:, :, None] & mask[:, None, :]
     c = c * valid.to(pos.dtype)
     return e, c
@@ -83,17 +91,19 @@ class TwoChannelBlock(nn.Module):
         hidden: int = 64,
         variant: str = "D",
         e_dim: int = 3,
+        radius: float = RADIUS,
     ):
         super().__init__()
-        if variant not in {"A", "B", "C", "D", "R", "E"}:
+        if variant not in {"A", "B", "C", "D", "R", "E", "S"}:
             raise ValueError(variant)
         self.variant = variant
         self.h_dim = h_dim
         self.msg_dim = msg_dim
         self.attn_dim = attn_dim
-        self.split = variant == "E"
+        self.radius = radius
+        self.split = variant in {"E", "S"}
         self.use_select = variant in {"A", "B", "D", "R", "E"}
-        self.use_sum = variant in {"C", "D", "E"}
+        self.use_sum = variant in {"C", "D", "E", "S"}
         self.density = {
             "A": "none",
             "B": "count",
@@ -101,6 +111,7 @@ class TwoChannelBlock(nn.Module):
             "D": "gated",
             "R": "gated",
             "E": "gated",
+            "S": "gated",
         }[variant]
         self.need_gate = self.use_sum or self.density == "gated"
 
@@ -113,8 +124,13 @@ class TwoChannelBlock(nn.Module):
             self.gate = MLP(h_dim + h_dim + e_dim, hidden, 1)
         if self.use_sum:
             self.phi = MLP(h_dim + e_dim, hidden, msg_dim)
-        slots = 2 if self.split else 1
-        fuse_in = h_dim + slots * (msg_dim + msg_dim + 1)
+        if variant == "S":
+            # Split sums only. Empty attention slots would pad the budget.
+            fuse_in = h_dim + 2 * (msg_dim + 1)
+        elif self.split:
+            fuse_in = h_dim + 2 * (msg_dim + msg_dim + 1)
+        else:
+            fuse_in = h_dim + msg_dim + msg_dim + 1
         self.fuse = MLP(fuse_in, hidden, h_dim)
         self.head = nn.Linear(h_dim, 1)
 
@@ -126,10 +142,11 @@ class TwoChannelBlock(nn.Module):
         e_override: torch.Tensor | None = None,
         c_override: torch.Tensor | None = None,
         chain: torch.Tensor | None = None,
+        resseq: torch.Tensor | None = None,
     ) -> dict[str, torch.Tensor]:
         """Return pre-fusion channels at every residue. Shape (B, N, ...)."""
         if e_override is None:
-            e, c = pair_geometry(pos, mask, chain)
+            e, c = pair_geometry(pos, mask, chain, self.radius, resseq)
         else:
             e, c = e_override, c_override
         return self._channels(h, e, c)
@@ -181,34 +198,60 @@ class TwoChannelBlock(nn.Module):
         e_override: torch.Tensor | None = None,
         c_override: torch.Tensor | None = None,
         chain: torch.Tensor | None = None,
+        resseq: torch.Tensor | None = None,
+    ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+        h_out, msg = self.encode(h, pos, mask, e_override, c_override, chain, resseq)
+        y = self.head(h_out[:, 0, :]).squeeze(-1)
+        return y, msg
+
+    def encode(
+        self,
+        h: torch.Tensor,
+        pos: torch.Tensor,
+        mask: torch.Tensor,
+        e_override: torch.Tensor | None = None,
+        c_override: torch.Tensor | None = None,
+        chain: torch.Tensor | None = None,
+        resseq: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
         if self.split:
             if e_override is None:
-                e, c = pair_geometry(pos, mask, chain)
+                e, c = pair_geometry(pos, mask, chain, self.radius, resseq)
             else:
                 e, c = e_override, c_override
             same = e[..., 2]
             msg = self._channels(h, e, c * same)
             cross = self._channels(h, e, c * (1.0 - same))
-            fuse_in = torch.cat(
-                [
-                    h,
-                    msg["m_select"],
-                    msg["m_sum"],
-                    torch.log1p(msg["rho"]).unsqueeze(-1),
-                    cross["m_select"],
-                    cross["m_sum"],
-                    torch.log1p(cross["rho"]).unsqueeze(-1),
-                ],
-                dim=-1,
-            )
+            if self.use_select:
+                fuse_in = torch.cat(
+                    [
+                        h,
+                        msg["m_select"],
+                        msg["m_sum"],
+                        torch.log1p(msg["rho"]).unsqueeze(-1),
+                        cross["m_select"],
+                        cross["m_sum"],
+                        torch.log1p(cross["rho"]).unsqueeze(-1),
+                    ],
+                    dim=-1,
+                )
+            else:
+                fuse_in = torch.cat(
+                    [
+                        h,
+                        msg["m_sum"],
+                        torch.log1p(msg["rho"]).unsqueeze(-1),
+                        cross["m_sum"],
+                        torch.log1p(cross["rho"]).unsqueeze(-1),
+                    ],
+                    dim=-1,
+                )
             h_out = h + self.fuse(fuse_in)
-            y = self.head(h_out[:, 0, :]).squeeze(-1)
             msg["rho_cross"] = cross["rho"]
             msg["m_sum_cross"] = cross["m_sum"]
-            return y, msg
+            return h_out, msg
 
-        msg = self.messages(h, pos, mask, e_override, c_override, chain)
+        msg = self.messages(h, pos, mask, e_override, c_override, chain, resseq)
         if self.density == "none":
             density = torch.zeros_like(msg["rho"])
         elif self.density == "count":
@@ -219,8 +262,7 @@ class TwoChannelBlock(nn.Module):
         m_sum = msg["m_sum"] if self.use_sum else torch.zeros_like(msg["m_sum"])
         fuse_in = torch.cat([h, m_select, m_sum, torch.log1p(density).unsqueeze(-1)], dim=-1)
         h_out = h + self.fuse(fuse_in)
-        y = self.head(h_out[:, 0, :]).squeeze(-1)
-        return y, msg
+        return h_out, msg
 
 
 def parameter_count(model: nn.Module) -> int:
