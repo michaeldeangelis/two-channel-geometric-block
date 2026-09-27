@@ -202,7 +202,7 @@ Rules fixed before the run:
 
 Ran on CPU after those rules were written. Record: `results/confirm.json`. 240 heterodimers, 106 clusters. The locked split is 142 train / 50 validation / 48 test. All 48 test clusters are singletons. Worst cross-partition identity 0.275. The 33 development ids, including the Stage 5 test, are in train and in neither validation nor test. Widths and parameter counts match Stage 5.
 
-The effect is the mean of cluster means. The interval is a 2000-draw cluster bootstrap, 2.5 and 97.5 percentiles. Because every test cluster is one complex, that resample is also a complex resample.
+The effect is the mean of cluster means. Seeds were averaged inside each complex before clusters were resampled. The interval is the 2.5 and 97.5 percentiles of 2000 cluster draws, a 95% bootstrap percentile interval. It is uncertainty across these held-out clusters. It does not include retraining, and it does not include a different training partition. Because every test cluster is one complex, the resample is also a complex resample.
 
 | Comparison | Effect | Bootstrap interval | Clusters favoring C |
 |---|---|---|---|
@@ -213,8 +213,34 @@ The effect is the mean of cluster means. The interval is a 2000-draw cluster boo
 
 Primary endpoint: the likelihood advantage holds. exp(−0.033) ≈ 0.968, about 3.2% lower perplexity than softmax. Test NLL is 2.846 for C, 2.878 for A, and 2.894 for F. A itself beats F by 0.015, interval [−0.020, −0.011], so on this larger set softmax is no longer indistinguishable from the frequency table. C's remaining gap over A is on top of that.
 
-Recovery moves by about half a percentage point (0.118 against 0.112, frequency baseline 0.105). The interval excludes zero. The predictions are still close to the common amino acids. Interface NLL also favors C here; the Stage 5 interface comparison was too noisy to say that. It is a secondary endpoint.
+Lower NLL means a higher geometric mean of the probabilities assigned to the correct residues. It does not mean every correct residue received a higher probability. It also does not mathematically explain the recovery change. Recovery records only whether a change crossed the argmax.
+
+Recovery moves by about half a percentage point (0.118 against 0.112, frequency baseline 0.105). The interval excludes zero. The predictions are still close to the common amino acids. Interface NLL also favors C here; the Stage 5 interface comparison was too noisy to say that. It is a secondary endpoint. There is no contradiction between those two interface outcomes.
 
 Checkpoints were steps 300, 350, and 400. On the earlier stops, training NLL was still falling while validation NLL had turned up. The table uses those checkpoints.
 
-This is a confirmed, small likelihood advantage for the same gated sum. It is not a useful inverse-folding model.
+This is a confirmed, small likelihood advantage for the same gated sum. It is not a useful inverse-folding model. The confirmation stays closed.
+
+## Stage 7 — sum versus normalized mean
+
+C beats A. That does not isolate accumulated magnitude as the reason. C, N, and Q use the same gate and the same message vectors.
+
+- C keeps the implemented gated sum, including its existing log(1+ρ) slot.
+- N replaces that sum with the mean, sum divided by (1e-8 + ρ), and the mass slot is zero.
+- Q uses that same mean and puts log(1+ρ) back.
+
+Same hidden width as C, 80. Same optimizer, 400 steps, three seeds, and the validation-NLL checkpoint. Whole-complex NLL is primary. The Stage 6 validation and test complexes stay out of this test. The interval is the same 95% cluster bootstrap, with seeds averaged first.
+
+Reading, fixed before the run: if N is worse than C and Q closes that gap, the mass channel is enough to recover the sum. If N and Q are both worse than C, handing the network the sum is easier than handing it the mean and the mass separately. If N matches C, dividing by the gate mass did not matter.
+
+Ran on CPU after those rules were written. Record: `results/magnitude.json`. 480 heterodimers, 196 clusters. Locked split 430 train / 20 validation / 30 test. The test complexes were not in any earlier validation or test split. All 30 test clusters are singletons. Worst cross-partition identity 0.293. C, N, and Q each have 22,278 parameters. By construction, the mean times (1e-8 + ρ) equals the sum.
+
+| Comparison | Effect on NLL | 95% cluster interval | Clusters |
+|---|---|---|---|
+| N − C | +0.036 | [+0.029, +0.042] | N worse on 29/30 |
+| Q − C | +0.029 | [+0.022, +0.036] | Q worse on 27/30 |
+| Q − N | −0.007 | [−0.011, −0.003] | Q better on 23/30 |
+
+Test NLL is 2.862 for C, 2.898 for N, and 2.891 for Q. Dividing by the gate mass hurts. Putting log(1+ρ) back helps a little and does not recover the sum. C already had that mass slot beside the sum, so Q versus C changes only the vector, from the sum to the mean. The mean and the mass determine the sum, and the fuse is an MLP, so the product is representable. The network did not use that product as well as the sum it was handed. That favors ease of optimization over a missing-information account.
+
+Whole-complex recovery is 0.107 for C, 0.094 for N, and 0.098 for Q. Interface NLL is 2.903, 2.933, and 2.932. The mass slot does not close the interface gap. Seeds were averaged before the cluster resample. The interval does not include retraining variation.

@@ -94,16 +94,18 @@ class TwoChannelBlock(nn.Module):
         radius: float = RADIUS,
     ):
         super().__init__()
-        if variant not in {"A", "B", "C", "D", "R", "E", "S"}:
+        if variant not in {"A", "B", "C", "D", "R", "E", "S", "N", "Q"}:
             raise ValueError(variant)
         self.variant = variant
         self.h_dim = h_dim
         self.msg_dim = msg_dim
         self.attn_dim = attn_dim
         self.radius = radius
+        # N and Q divide the gated sum by gate mass. Q also keeps log(1+rho).
+        self.normalize = variant in {"N", "Q"}
         self.split = variant in {"E", "S"}
         self.use_select = variant in {"A", "B", "D", "R", "E"}
-        self.use_sum = variant in {"C", "D", "E", "S"}
+        self.use_sum = variant in {"C", "D", "E", "S", "N", "Q"}
         self.density = {
             "A": "none",
             "B": "count",
@@ -112,6 +114,8 @@ class TwoChannelBlock(nn.Module):
             "R": "gated",
             "E": "gated",
             "S": "gated",
+            "N": "none",
+            "Q": "gated",
         }[variant]
         self.need_gate = self.use_sum or self.density == "gated"
 
@@ -181,6 +185,9 @@ class TwoChannelBlock(nn.Module):
         else:
             m_sum = torch.zeros(b, n, self.msg_dim, device=h.device, dtype=h.dtype)
         rho = (c * g).sum(dim=-1) if self.need_gate else torch.zeros(b, n, device=h.device, dtype=h.dtype)
+        if self.normalize:
+            # m_mean = sum_j g v / (eps + sum_j g). eps is 1e-8.
+            m_sum = m_sum / (1e-8 + rho).unsqueeze(-1)
         return {
             "m_select": m_select,
             "m_sum": m_sum,

@@ -97,6 +97,29 @@ def _xy(comp: dict):
     return batch["pos"], batch["mask"], batch["chain"], batch["resseq"]
 
 
+def test_normalized_mean_reconstructs_the_gated_sum() -> None:
+    from block import TwoChannelBlock
+
+    torch.manual_seed(0)
+    pos = torch.randn(1, 6, 3)
+    mask = torch.ones(1, 6, dtype=torch.bool)
+    h = torch.randn(1, 6, 32)
+    summed = TwoChannelBlock(32, 32, 32, 16, "C", radius=10.0)
+    averaged = TwoChannelBlock(32, 32, 32, 16, "N", radius=10.0)
+    with_mass = TwoChannelBlock(32, 32, 32, 16, "Q", radius=10.0)
+    averaged.load_state_dict(summed.state_dict())
+    with_mass.load_state_dict(summed.state_dict())
+    with torch.no_grad():
+        got_sum = summed.messages(h, pos, mask)
+        got_mean = averaged.messages(h, pos, mask)
+        got_mass = with_mass.messages(h, pos, mask)
+    recon = got_mean["m_sum"] * (1e-8 + got_mean["rho"]).unsqueeze(-1)
+    if not torch.allclose(recon, got_sum["m_sum"], atol=1e-5):
+        raise AssertionError("mean times gate mass did not recover the sum")
+    if not torch.allclose(got_mean["m_sum"], got_mass["m_sum"], atol=1e-5):
+        raise AssertionError("N and Q changed the gated messages")
+
+
 def test_cluster_interval_is_constant_when_every_cluster_agrees() -> None:
     from run_confirm import cluster_interval
 
@@ -113,6 +136,7 @@ def main() -> None:
     test_zero_coordinates_ignore_geometry()
     test_frequency_baseline_uses_the_training_mode()
     test_cluster_interval_is_constant_when_every_cluster_agrees()
+    test_normalized_mean_reconstructs_the_gated_sum()
     print("scale checks passed")
 
 

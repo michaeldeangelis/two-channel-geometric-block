@@ -80,7 +80,7 @@ def search_entries(n: int = 60, start: int = 0) -> list[str]:
                     "parameters": {
                         "attribute": "rcsb_accession_info.initial_release_date",
                         "operator": "range",
-                        "value": {"from": "2012-01-01", "to": "2022-06-01"},
+                        "value": {"from": "2000-01-01", "to": "2022-06-01"},
                     },
                 },
             ],
