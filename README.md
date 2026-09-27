@@ -1,14 +1,26 @@
 # Two-channel geometric block
 
-Inside a three-block encoder, replacing the gated sum with a normalized mean plus log mass raised held-out negative log-likelihood by 0.012 nats. A 95% cluster bootstrap put that gap between 0.004 and 0.021. The same substitution in the one-block model was 0.029 nats, on a different locked split.
+Doubling the three-block training budget to 800 steps left the gap in place. Mean plus log mass is still 0.013 nats worse than the gated sum on the same 30 complexes. A 95% cluster interval is 0.004 to 0.022. The two mean-plus-mass seeds that had selected step 400 now select step 750. One seed of each aggregation is still best at step 800, so that boundary stays open and the follow-up stops.
 
-On one fixed one-block checkpoint, rebuilding the sum from the mean and log mass changed logits by at most 8.3e-7. The algebra matches the masking and fusion code. The training gap is not an implementation mismatch.
+A lower NLL raises the geometric mean of the correct-residue probabilities. For this gap the factor is exp(0.013) ≈ 1.013, about 1.3% higher, with the same complex weighting as the NLL. Perplexity is about 1.3% lower. exp(−0.013) is the perplexity ratio, not the probability ratio.
 
-The fusion layer receives log(1+ρ), so the rebuilt sum is the mean times (1e-8 + exp(log(1+ρ)) − 1). The inputs determine the sum. A finite MLP has to learn that map, and separately trained gates need not match, because the aggregation changes the gradients. Directly supplying the unnormalized aggregate improves held-out likelihood here even when gate mass stays available. That does not separate easier optimization, activation scale, regularization, or generalization.
+On one fixed one-block checkpoint, rebuilding the sum from the mean and log mass changed logits by at most 8.3e-7. That establishes equivalence at fixed weights. It does not identify upstream gradients as the cause. Different gradient trajectories, activation scale, regularization, and generalization remain compatible.
+
+The fusion layer receives log(1+ρ), so the rebuilt sum is the mean times (1e-8 + exp(log(1+ρ)) − 1). Directly supplying the unnormalized aggregate improves held-out likelihood here even when gate mass stays available, in both the one-block encoder and the three-block encoder. The 0.029 nat one-block gap and the 0.012 nat three-block gap use different complexes, so that difference is not evidence that depth reduced the effect.
 
 The likelihood advantage of the gated sum over geometric softmax remains the earlier result: 0.033 nats on 48 locked clusters, interval 0.027 to 0.039. This run did not repeat that comparison.
 
 The definition is in [hypothesis.md](hypothesis.md). The decision rule and the reading of each result are in [experiments.md](experiments.md).
+
+## Eight hundred steps
+
+Same architecture, same lock, same seeds. The validation curve through step 400 matches the earlier run exactly. Checkpointing is still the lowest validation NLL, and the test is not used to stop. This is a follow-up on an already examined test. Record: `results/deep_budget.json`.
+
+| Comparison | Effect on NLL | 95% cluster interval | Clusters |
+|---|---|---|---|
+| Mean-plus-mass − sum | +0.013 | [+0.004, +0.022] | mean-plus-mass worse on 22/30 |
+
+Test NLL is 2.836 for the sum and 2.850 for the mean plus mass. Interface NLL differs by +0.020, interval 0.005 to 0.036, mean worse on 17 of 30. Recovery’s interval includes zero. Selected steps are 800, 450, and 750 for the sum, and 800, 750, and 750 for the mean plus mass.
 
 ## Deeper encoder
 
@@ -18,7 +30,7 @@ Three blocks, residue width 64, message width 64, mixer hidden 128. Both aggrega
 |---|---|---|---|
 | Mean-plus-mass − sum | +0.012 | [+0.004, +0.021] | mean-plus-mass worse on 21/30 |
 
-Test NLL is 2.858 for the sum and 2.870 for the mean plus mass. Whole-complex recovery is 0.113 and 0.112; that recovery interval includes zero. Interface NLL is 2.872 and 2.895, a paired gap of +0.023 with interval [+0.004, +0.040], mean worse on 21/30. The sum’s three seeds checkpointed at step 350. Two mean-plus-mass seeds were still best at step 400.
+Test NLL is 2.858 for the sum and 2.870 for the mean plus mass. That 0.012 nat gap is a factor of exp(0.012) ≈ 1.012 on the geometric mean of the correct-residue probabilities, about 1.2% higher, and about 1.2% lower perplexity. Whole-complex recovery is 0.113 and 0.112; that recovery interval includes zero. Interface NLL is 2.872 and 2.895, a paired gap of +0.023 with interval [+0.004, +0.040], mean worse on 21/30. The sum’s three seeds checkpointed at step 350. Two mean-plus-mass seeds were still best at step 400. That 400-step boundary is what the 800-step follow-up checks. Greater depth shows the aggregation result survives a larger encoder. It does not show a more capable inverse folder.
 
 ## Algebraic check
 
@@ -65,9 +77,10 @@ python run_confirm.py
 python run_magnitude.py
 python check_reconstruct.py
 python run_deep.py
+python run_deep_budget.py
 ```
 
-CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0. Inverse-folding scripts download PDB files into `data/`, which is gitignored. A locked split file is reused when it is already present. `check_reconstruct.py` needs the magnitude lock. `run_deep.py` needs the earlier locks so it can keep those complexes out of the test.
+CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0. Inverse-folding scripts download PDB files into `data/`, which is gitignored. A locked split file is reused when it is already present. `check_reconstruct.py` needs the magnitude lock. `run_deep.py` needs the earlier locks so it can keep those complexes out of the test. `run_deep_budget.py` reuses the deep lock and does not make a new split.
 
 ## Layout
 
@@ -76,6 +89,7 @@ CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0. Inve
 | `block.py` | Variants, including the normalized mean, the mean plus mass, and the reconstruction check |
 | `inverse_fold.py` | One-block folder and the three-block stack |
 | `run_deep.py` | Sum versus mean-plus-mass in the three-block encoder |
+| `run_deep_budget.py` | Same comparison at 800 steps, on that same test |
 | `check_reconstruct.py` | Fixed-checkpoint logit comparison |
 | `run_magnitude.py` | One-block sum versus mean on a fresh locked test |
 | `run_confirm.py` | Locked gated-sum versus softmax confirmation |

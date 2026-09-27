@@ -87,7 +87,8 @@ def _slim(rows: list[dict]) -> list[dict]:
     return [{k: row[k] for k in keep} for row in rows]
 
 
-def train_one(name: str, variant: str, hidden: int, geometry: bool, seed: int, train, val, test, build=None, return_model: bool = False) -> dict:
+def train_one(name: str, variant: str, hidden: int, geometry: bool, seed: int, train, val, test, build=None, return_model: bool = False, steps: int | None = None) -> dict:
+    budget = STEPS if steps is None else steps
     torch.manual_seed(seed)
     maker = build or InverseFolder
     model = maker(variant, hidden, geometry=geometry)
@@ -97,7 +98,7 @@ def train_one(name: str, variant: str, hidden: int, geometry: bool, seed: int, t
     best_score = float("inf")
     best_state = None
     best_step = 1
-    for step in range(1, STEPS + 1):
+    for step in range(1, budget + 1):
         if (step - 1) % max(len(order) // BATCH, 1) == 0:
             random.Random(seed + step).shuffle(order)
         pick = [train[order[k % len(order)]] for k in range(step - 1, step - 1 + BATCH)]
@@ -112,7 +113,7 @@ def train_one(name: str, variant: str, hidden: int, geometry: bool, seed: int, t
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step()
-        if step == 1 or step % EVERY == 0 or step == STEPS:
+        if step == 1 or step % EVERY == 0 or step == budget:
             train_rows = _rows(model, train)
             val_rows = _rows(model, val)
             train_nll = _macro(train_rows, "nll")
@@ -150,6 +151,8 @@ def train_one(name: str, variant: str, hidden: int, geometry: bool, seed: int, t
         "test_argmax_freq": _mix(test_rows, "argmax_freq"),
         "params": parameter_count(model),
     }
+    if steps is not None:
+        done["steps"] = budget
     if return_model:
         done["model"] = model
     return done

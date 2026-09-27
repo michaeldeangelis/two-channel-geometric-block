@@ -1,0 +1,1423 @@
+{
+  "task": "800-step follow-up of the 3-block sum versus mean-plus-mass comparison",
+  "label": "follow-up on the already examined deep test",
+  "steps": 800,
+  "prior_steps": 400,
+  "depth": 3,
+  "h_dim": 64,
+  "msg": 64,
+  "hidden": 128,
+  "uncertainty": "95% cluster bootstrap, seeds averaged first; not retraining variation; not a new partition",
+  "test_ids": [
+    "4UZZ",
+    "4OH8",
+    "4K12",
+    "4C7N",
+    "4CMM",
+    "4NQW",
+    "4JDE",
+    "4BX7",
+    "4LAD",
+    "4H5S",
+    "4BJJ",
+    "4KT3",
+    "4HR1",
+    "4G6T",
+    "4HPL",
+    "4IKB",
+    "3ZH7",
+    "3VZ9",
+    "3VVW",
+    "4EUK",
+    "4ACV",
+    "4GVB",
+    "4HPK",
+    "4A5U",
+    "4AYC",
+    "4G7X",
+    "3B0Z",
+    "4A6F",
+    "4AE4",
+    "3B0C"
+  ],
+  "prior_effect": {
+    "point": 0.012361044353908982,
+    "lo": 0.0037412140104505554,
+    "hi": 0.020899801784091596,
+    "n_clusters": 30,
+    "resamples": 2000
+  },
+  "effect": {
+    "point": 0.013459844059414324,
+    "lo": 0.003926380475362053,
+    "hi": 0.022310137748718293,
+    "n_clusters": 30,
+    "resamples": 2000
+  },
+  "interface_effect": {
+    "point": 0.02029442787170407,
+    "lo": 0.00530456437004938,
+    "hi": 0.036331552929348435,
+    "n_clusters": 30,
+    "resamples": 2000
+  },
+  "paired": [
+    {
+      "id": "4UZZ",
+      "cluster": "4UZZ",
+      "C_nll": 2.877241770426432,
+      "Q_nll": 2.86367138226827,
+      "Q_minus_C_nll": -0.013570388158162139,
+      "C_recovery": 0.11753371606270473,
+      "Q_recovery": 0.12138728052377701,
+      "C_interface_nll": 2.932934522628784,
+      "Q_interface_nll": 2.9056483109792075
+    },
+    {
+      "id": "4OH8",
+      "cluster": "4OH8",
+      "C_nll": 2.712675094604492,
+      "Q_nll": 2.7644989490509033,
+      "Q_minus_C_nll": 0.05182385444641113,
+      "C_recovery": 0.17602996031443277,
+      "Q_recovery": 0.17977528274059296,
+      "C_interface_nll": 2.585004727045695,
+      "Q_interface_nll": 2.71431032816569
+    },
+    {
+      "id": "4K12",
+      "cluster": "4K12",
+      "C_nll": 2.8155484199523926,
+      "Q_nll": 2.8010698159535727,
+      "Q_minus_C_nll": -0.014478603998819839,
+      "C_recovery": 0.1095890427629153,
+      "Q_recovery": 0.10502283275127411,
+      "C_interface_nll": 2.9720784028371177,
+      "Q_interface_nll": 2.9710630575815835
+    },
+    {
+      "id": "4C7N",
+      "cluster": "4C7N",
+      "C_nll": 2.672201077143351,
+      "Q_nll": 2.728016455968221,
+      "Q_minus_C_nll": 0.05581537882487009,
+      "C_recovery": 0.15306122601032257,
+      "Q_recovery": 0.15646258493264517,
+      "C_interface_nll": 2.5623976389567056,
+      "Q_interface_nll": 2.66081174214681
+    },
+    {
+      "id": "4CMM",
+      "cluster": "4CMM",
+      "C_nll": 2.807522455851237,
+      "Q_nll": 2.8164941469828286,
+      "Q_minus_C_nll": 0.008971691131591797,
+      "C_recovery": 0.10028248528639476,
+      "Q_recovery": 0.08757062007983525,
+      "C_interface_nll": 2.7964162031809487,
+      "Q_interface_nll": 2.8718565305074057
+    },
+    {
+      "id": "4NQW",
+      "cluster": "4NQW",
+      "C_nll": 2.730036497116089,
+      "Q_nll": 2.737779458363851,
+      "Q_minus_C_nll": 0.007742961247762192,
+      "C_recovery": 0.14027149975299835,
+      "Q_recovery": 0.15082956850528717,
+      "C_interface_nll": 2.763262987136841,
+      "Q_interface_nll": 2.784971316655477
+    },
+    {
+      "id": "4JDE",
+      "cluster": "4JDE",
+      "C_nll": 2.920891364415487,
+      "Q_nll": 2.9125044345855713,
+      "Q_minus_C_nll": -0.008386929829915513,
+      "C_recovery": 0.08130081246296565,
+      "Q_recovery": 0.08710801353057225,
+      "C_interface_nll": 3.021249850591024,
+      "Q_interface_nll": 3.061180671056112
+    },
+    {
+      "id": "4BX7",
+      "cluster": "4BX7",
+      "C_nll": 2.876377582550049,
+      "Q_nll": 2.861433664957682,
+      "Q_minus_C_nll": -0.014943917592366684,
+      "C_recovery": 0.07172995929916699,
+      "Q_recovery": 0.07313642650842667,
+      "C_interface_nll": 2.876438538233439,
+      "Q_interface_nll": 2.8762011528015137
+    },
+    {
+      "id": "4LAD",
+      "cluster": "4LAD",
+      "C_nll": 2.9221560955047607,
+      "Q_nll": 2.9280733267466226,
+      "Q_minus_C_nll": 0.005917231241861831,
+      "C_recovery": 0.13751868406931558,
+      "Q_recovery": 0.09715993950764339,
+      "C_interface_nll": 2.811368227005005,
+      "Q_interface_nll": 2.8673743406931558
+    },
+    {
+      "id": "4H5S",
+      "cluster": "4H5S",
+      "C_nll": 2.8099735577901206,
+      "Q_nll": 2.8394522666931152,
+      "Q_minus_C_nll": 0.029478708902994644,
+      "C_recovery": 0.06972789019346237,
+      "Q_recovery": 0.09863945593436559,
+      "C_interface_nll": 2.6402326424916587,
+      "Q_interface_nll": 2.6556009451548257
+    },
+    {
+      "id": "4BJJ",
+      "cluster": "4BJJ",
+      "C_nll": 2.89276130994161,
+      "Q_nll": 2.9106315771738687,
+      "Q_minus_C_nll": 0.01787026723225882,
+      "C_recovery": 0.08726003766059875,
+      "Q_recovery": 0.09249563763538997,
+      "C_interface_nll": 2.915090560913086,
+      "Q_interface_nll": 2.957460880279541
+    },
+    {
+      "id": "4KT3",
+      "cluster": "4KT3",
+      "C_nll": 2.8191939194997153,
+      "Q_nll": 2.8204356829325357,
+      "Q_minus_C_nll": 0.001241763432820342,
+      "C_recovery": 0.10062893231709798,
+      "Q_recovery": 0.09559748570124309,
+      "C_interface_nll": 2.9632275899251304,
+      "Q_interface_nll": 2.946300824483236
+    },
+    {
+      "id": "4HR1",
+      "cluster": "4HR1",
+      "C_nll": 2.735049247741699,
+      "Q_nll": 2.775693416595459,
+      "Q_minus_C_nll": 0.040644168853759766,
+      "C_recovery": 0.1370056519905726,
+      "Q_recovery": 0.1341807891925176,
+      "C_interface_nll": 2.8445699214935303,
+      "Q_interface_nll": 2.8761254946390786
+    },
+    {
+      "id": "4G6T",
+      "cluster": "4G6T",
+      "C_nll": 2.8298447132110596,
+      "Q_nll": 2.843621810277303,
+      "Q_minus_C_nll": 0.013777097066243638,
+      "C_recovery": 0.16917923092842102,
+      "Q_recovery": 0.1256281410654386,
+      "C_interface_nll": 2.8954153855641684,
+      "Q_interface_nll": 2.8642830848693848
+    },
+    {
+      "id": "4HPL",
+      "cluster": "4HPL",
+      "C_nll": 2.8883904616038003,
+      "Q_nll": 2.8986258506774902,
+      "Q_minus_C_nll": 0.010235389073689927,
+      "C_recovery": 0.10204081485668819,
+      "Q_recovery": 0.10374149680137634,
+      "C_interface_nll": 2.988374630610148,
+      "Q_interface_nll": 2.9752670923868814
+    },
+    {
+      "id": "4IKB",
+      "cluster": "4IKB",
+      "C_nll": 2.7997941176096597,
+      "Q_nll": 2.834193468093872,
+      "Q_minus_C_nll": 0.03439935048421239,
+      "C_recovery": 0.14814815173546472,
+      "Q_recovery": 0.12037037312984467,
+      "C_interface_nll": 2.762460152308146,
+      "Q_interface_nll": 2.807819366455078
+    },
+    {
+      "id": "3ZH7",
+      "cluster": "3ZH7",
+      "C_nll": 2.908088763554891,
+      "Q_nll": 2.8997604846954346,
+      "Q_minus_C_nll": -0.008328278859456528,
+      "C_recovery": 0.0859375,
+      "Q_recovery": 0.11067708333333333,
+      "C_interface_nll": 3.211043198903402,
+      "Q_interface_nll": 3.195753574371338
+    },
+    {
+      "id": "3VZ9",
+      "cluster": "3VZ9",
+      "C_nll": 2.9250898361206055,
+      "Q_nll": 2.928673426310221,
+      "Q_minus_C_nll": 0.0035835901896157374,
+      "C_recovery": 0.09815950940052669,
+      "Q_recovery": 0.07770961274703343,
+      "C_interface_nll": 3.084074099858602,
+      "Q_interface_nll": 3.0773523648579917
+    },
+    {
+      "id": "3VVW",
+      "cluster": "3VVW",
+      "C_nll": 2.9128644466400146,
+      "Q_nll": 2.9273688793182373,
+      "Q_minus_C_nll": 0.014504432678222656,
+      "C_recovery": 0.08482142786184947,
+      "Q_recovery": 0.0818452388048172,
+      "C_interface_nll": 2.7813261349995932,
+      "Q_interface_nll": 2.7494218349456787
+    },
+    {
+      "id": "4EUK",
+      "cluster": "4EUK",
+      "C_nll": 2.8132313092549643,
+      "Q_nll": 2.8252975940704346,
+      "Q_minus_C_nll": 0.01206628481547023,
+      "C_recovery": 0.12847222139437994,
+      "Q_recovery": 0.1111111119389534,
+      "C_interface_nll": 2.838517427444458,
+      "Q_interface_nll": 2.836587349573771
+    },
+    {
+      "id": "4ACV",
+      "cluster": "4ACV",
+      "C_nll": 2.93332839012146,
+      "Q_nll": 2.9150251547495523,
+      "Q_minus_C_nll": -0.0183032353719077,
+      "C_recovery": 0.10192837317784627,
+      "Q_recovery": 0.11157024651765823,
+      "C_interface_nll": 2.9753853480021157,
+      "Q_interface_nll": 2.9656198024749756
+    },
+    {
+      "id": "4GVB",
+      "cluster": "4GVB",
+      "C_nll": 2.9034200509389243,
+      "Q_nll": 2.956705411275228,
+      "Q_minus_C_nll": 0.05328536033630371,
+      "C_recovery": 0.07064017901817958,
+      "Q_recovery": 0.08830022315184276,
+      "C_interface_nll": 2.8645575841267905,
+      "Q_interface_nll": 2.8771352767944336
+    },
+    {
+      "id": "4HPK",
+      "cluster": "4HPK",
+      "C_nll": 2.8166042963663735,
+      "Q_nll": 2.8616031805674234,
+      "Q_minus_C_nll": 0.044998884201049805,
+      "C_recovery": 0.09267563621203105,
+      "Q_recovery": 0.09566517174243927,
+      "C_interface_nll": 2.754770119984945,
+      "Q_interface_nll": 2.797825892766317
+    },
+    {
+      "id": "4A5U",
+      "cluster": "4A5U",
+      "C_nll": 2.8048011461893716,
+      "Q_nll": 2.81795072555542,
+      "Q_minus_C_nll": 0.013149579366048325,
+      "C_recovery": 0.16081871589024863,
+      "Q_recovery": 0.14619882901509604,
+      "C_interface_nll": 2.7519002755482993,
+      "Q_interface_nll": 2.841643969217936
+    },
+    {
+      "id": "4AYC",
+      "cluster": "4AYC",
+      "C_nll": 2.910756746927897,
+      "Q_nll": 2.8569361368815103,
+      "Q_minus_C_nll": -0.05382061004638672,
+      "C_recovery": 0.13613231728474298,
+      "Q_recovery": 0.11959287524223328,
+      "C_interface_nll": 2.9133320649464927,
+      "Q_interface_nll": 2.897794246673584
+    },
+    {
+      "id": "4G7X",
+      "cluster": "4G7X",
+      "C_nll": 2.844528834025065,
+      "Q_nll": 2.877051750818888,
+      "Q_minus_C_nll": 0.03252291679382324,
+      "C_recovery": 0.0962199295560519,
+      "Q_recovery": 0.09278350323438644,
+      "C_interface_nll": 2.817823648452759,
+      "Q_interface_nll": 2.8228445053100586
+    },
+    {
+      "id": "3B0Z",
+      "cluster": "3B0Z",
+      "C_nll": 2.831183115641276,
+      "Q_nll": 2.8452215989430747,
+      "Q_minus_C_nll": 0.014038483301798799,
+      "C_recovery": 0.11999999731779099,
+      "Q_recovery": 0.15200000007947287,
+      "C_interface_nll": 2.762852986653646,
+      "Q_interface_nll": 2.794322411219279
+    },
+    {
+      "id": "4A6F",
+      "cluster": "4A6F",
+      "C_nll": 2.9030443032582602,
+      "Q_nll": 2.941701809565226,
+      "Q_minus_C_nll": 0.03865750630696585,
+      "C_recovery": 0.10077519466479619,
+      "Q_recovery": 0.10542635867993037,
+      "C_interface_nll": 2.8475680351257324,
+      "Q_interface_nll": 2.9051994482676187
+    },
+    {
+      "id": "4AE4",
+      "cluster": "4AE4",
+      "C_nll": 2.698842207590739,
+      "Q_nll": 2.6982270876566568,
+      "Q_minus_C_nll": -0.0006151199340820312,
+      "C_recovery": 0.20379146933555603,
+      "Q_recovery": 0.1769352306922277,
+      "C_interface_nll": 2.9855636755625405,
+      "Q_interface_nll": 2.930024782816569
+    },
+    {
+      "id": "3B0C",
+      "cluster": "3B0C",
+      "C_nll": 2.7730584939320884,
+      "Q_nll": 2.8045759995778403,
+      "Q_minus_C_nll": 0.03151750564575195,
+      "C_recovery": 0.15447154641151428,
+      "Q_recovery": 0.1178861806790034,
+      "C_interface_nll": 2.766969601313273,
+      "Q_interface_nll": 2.8072384198506675
+    }
+  ],
+  "runs": {
+    "C": [
+      {
+        "best_step": 800,
+        "best_val_nll": 2.8309974329812184,
+        "history": [
+          {
+            "step": 1,
+            "train_nll": 2.978226195404302,
+            "val_nll": 2.972517047609602,
+            "val_recovery": 0.06302396443095945,
+            "val_interface_nll": 3.0009190695626393,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 50,
+            "train_nll": 2.902690136627162,
+            "val_nll": 2.9156018779391335,
+            "val_recovery": 0.07806899540481113,
+            "val_interface_nll": 2.9315913177671886,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 100,
+            "train_nll": 2.889058136439824,
+            "val_nll": 2.8988784608386813,
+            "val_recovery": 0.07876314808215414,
+            "val_interface_nll": 2.930836314246768,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 150,
+            "train_nll": 2.867298260713235,
+            "val_nll": 2.8760496321178617,
+            "val_recovery": 0.08821872231506166,
+            "val_interface_nll": 2.903790235519409,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 200,
+            "train_nll": 2.8619555776769463,
+            "val_nll": 2.871045316968645,
+            "val_recovery": 0.10326863984976496,
+            "val_interface_nll": 2.905937569481986,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 250,
+            "train_nll": 2.8464077152572314,
+            "val_nll": 2.8633699871244884,
+            "val_recovery": 0.08265192788981256,
+            "val_interface_nll": 2.9089060851505826,
+            "val_argmax_top": "G"
+          },
+          {
+            "step": 300,
+            "train_nll": 2.8487052211672554,
+            "val_nll": 2.8732085682096935,
+            "val_recovery": 0.106279204643908,
+            "val_interface_nll": 2.9370122182936895,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 350,
+            "train_nll": 2.83021123314793,
+            "val_nll": 2.854323319026402,
+            "val_recovery": 0.11113651274215608,
+            "val_interface_nll": 2.9272119658333913,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 400,
+            "train_nll": 2.8561098458883647,
+            "val_nll": 2.8924362432389032,
+            "val_recovery": 0.07873648866301491,
+            "val_interface_nll": 2.9340402285257974,
+            "val_argmax_top": "D"
+          },
+          {
+            "step": 450,
+            "train_nll": 2.81828319220554,
+            "val_nll": 2.834474665778024,
+            "val_recovery": 0.10566819884947368,
+            "val_interface_nll": 2.9022427854083834,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 500,
+            "train_nll": 2.807430905339879,
+            "val_nll": 2.8395317849658785,
+            "val_recovery": 0.09913128366072972,
+            "val_interface_nll": 2.9215617974599204,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 550,
+            "train_nll": 2.813117923158588,
+            "val_nll": 2.834187802814302,
+            "val_recovery": 0.11131656631117776,
+            "val_interface_nll": 2.9232831568945024,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 600,
+            "train_nll": 2.80162514228643,
+            "val_nll": 2.8376362437293645,
+            "val_recovery": 0.114994625605288,
+            "val_interface_nll": 2.9299014749981107,
+            "val_argmax_top": "K"
+          },
+          {
+            "step": 650,
+            "train_nll": 2.8010380229194127,
+            "val_nll": 2.842777592795236,
+            "val_recovery": 0.11156514535347621,
+            "val_interface_nll": 2.915820360183716,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 700,
+            "train_nll": 2.801264331057355,
+            "val_nll": 2.8456484590257918,
+            "val_recovery": 0.10634527781179973,
+            "val_interface_nll": 2.9446769328344438,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 750,
+            "train_nll": 2.7959115960937,
+            "val_nll": 2.8345186483292353,
+            "val_recovery": 0.1066696106323174,
+            "val_interface_nll": 2.89562718073527,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 800,
+            "train_nll": 2.7849463549527256,
+            "val_nll": 2.8309974329812184,
+            "val_recovery": 0.10690931904883612,
+            "val_interface_nll": 2.911855379740397,
+            "val_argmax_top": "L"
+          }
+        ],
+        "train_nll_at_best": 2.7849463549527256,
+        "final_train_nll": 2.7849463549527256,
+        "final_val_nll": 2.8309974329812184,
+        "test_argmax_freq": [
+          0.06218704628285626,
+          0.0009691487659900741,
+          0.08189307094060162,
+          0.16766273735524032,
+          0.0,
+          0.13584235304898273,
+          0.0,
+          0.0,
+          0.03892747574730892,
+          0.38022936410038216,
+          0.0,
+          0.0,
+          0.00856081406329988,
+          0.0,
+          0.0,
+          0.001453723142742196,
+          0.011791310017978725,
+          0.11032143456311097,
+          0.0,
+          0.00016152478623343984
+        ],
+        "params": 203034,
+        "steps": 800
+      },
+      {
+        "best_step": 450,
+        "best_val_nll": 2.83936299596514,
+        "history": [
+          {
+            "step": 1,
+            "train_nll": 2.992864949442012,
+            "val_nll": 3.011094876698085,
+            "val_recovery": 0.05503066327600252,
+            "val_interface_nll": 3.0176886944543746,
+            "val_argmax_top": "A"
+          },
+          {
+            "step": 50,
+            "train_nll": 2.898857752482096,
+            "val_nll": 2.899136883871896,
+            "val_recovery": 0.09233270603276435,
+            "val_interface_nll": 2.920036781401861,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 100,
+            "train_nll": 2.892684952084557,
+            "val_nll": 2.898584876741682,
+            "val_recovery": 0.06412365269802865,
+            "val_interface_nll": 2.9176213173639205,
+            "val_argmax_top": "E"
+          },
+          {
+            "step": 150,
+            "train_nll": 2.868449308933356,
+            "val_nll": 2.8828286216372536,
+            "val_recovery": 0.09112196185049556,
+            "val_interface_nll": 2.901049852371216,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 200,
+            "train_nll": 2.873752386142046,
+            "val_nll": 2.884508666538057,
+            "val_recovery": 0.09028234235232785,
+            "val_interface_nll": 2.9038598196847096,
+            "val_argmax_top": "E"
+          },
+          {
+            "step": 250,
+            "train_nll": 2.848088252238738,
+            "val_nll": 2.8615114915938604,
+            "val_recovery": 0.10288708195799873,
+            "val_interface_nll": 2.90478523572286,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 300,
+            "train_nll": 2.850339399351107,
+            "val_nll": 2.8521574224744524,
+            "val_recovery": 0.09420973594699587,
+            "val_interface_nll": 2.898511364346459,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 350,
+            "train_nll": 2.8353384758209015,
+            "val_nll": 2.8475303990500316,
+            "val_recovery": 0.11606752907945997,
+            "val_interface_nll": 2.9149002007075717,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 400,
+            "train_nll": 2.839703178072309,
+            "val_nll": 2.861918562934512,
+            "val_recovery": 0.10880141013434955,
+            "val_interface_nll": 2.9251125199454173,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 450,
+            "train_nll": 2.824582989677127,
+            "val_nll": 2.83936299596514,
+            "val_recovery": 0.10249598767785799,
+            "val_interface_nll": 2.8918422744387673,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 500,
+            "train_nll": 2.8222083723072684,
+            "val_nll": 2.8614456994192943,
+            "val_recovery": 0.11445107452926181,
+            "val_interface_nll": 2.924359980083647,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 550,
+            "train_nll": 2.8305647089764787,
+            "val_nll": 2.8583020596277144,
+            "val_recovery": 0.11087104110490709,
+            "val_interface_nll": 2.9167288030896867,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 600,
+            "train_nll": 2.815493406393589,
+            "val_nll": 2.8490055742717924,
+            "val_recovery": 0.1095428541302681,
+            "val_interface_nll": 2.9163532824743363,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 650,
+            "train_nll": 2.8353024412702013,
+            "val_nll": 2.8848005476452054,
+            "val_recovery": 0.1007605047807807,
+            "val_interface_nll": 2.93204318909418,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 700,
+            "train_nll": 2.8287307760376477,
+            "val_nll": 2.856191101528349,
+            "val_recovery": 0.11039288625830695,
+            "val_interface_nll": 2.9374319031125022,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 750,
+            "train_nll": 2.8140842936811468,
+            "val_nll": 2.8436468101683117,
+            "val_recovery": 0.10125582328154928,
+            "val_interface_nll": 2.9111748309362504,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 800,
+            "train_nll": 2.8222346650414813,
+            "val_nll": 2.8620167119162425,
+            "val_recovery": 0.10360133789834522,
+            "val_interface_nll": 2.9161410558791387,
+            "val_argmax_top": "L"
+          }
+        ],
+        "train_nll_at_best": 2.824582989677127,
+        "final_train_nll": 2.8222346650414813,
+        "final_val_nll": 2.8620167119162425,
+        "test_argmax_freq": [
+          0.07236310831439445,
+          0.0,
+          0.04910353744834869,
+          0.13778064952402985,
+          0.0,
+          0.0862542402391561,
+          0.0,
+          0.0,
+          0.05298013245142175,
+          0.5474075254042648,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0387659512270387,
+          0.004361169478019476,
+          0.010983686136754846,
+          0.0,
+          0.0
+        ],
+        "params": 203034,
+        "steps": 800
+      },
+      {
+        "best_step": 750,
+        "best_val_nll": 2.821548893338158,
+        "history": [
+          {
+            "step": 1,
+            "train_nll": 2.9971459406517047,
+            "val_nll": 3.0048819382985434,
+            "val_recovery": 0.051759328781848864,
+            "val_interface_nll": 2.996157339641026,
+            "val_argmax_top": "Q"
+          },
+          {
+            "step": 50,
+            "train_nll": 2.9156751849434595,
+            "val_nll": 2.9132938157944452,
+            "val_recovery": 0.08089461337242808,
+            "val_interface_nll": 2.9299964564187184,
+            "val_argmax_top": "K"
+          },
+          {
+            "step": 100,
+            "train_nll": 2.890075715271743,
+            "val_nll": 2.895425410497756,
+            "val_recovery": 0.08836420767364048,
+            "val_interface_nll": 2.930036124728975,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 150,
+            "train_nll": 2.8749805441547385,
+            "val_nll": 2.876930202756609,
+            "val_recovery": 0.10455231474978584,
+            "val_interface_nll": 2.896374214263189,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 200,
+            "train_nll": 2.8578749864529343,
+            "val_nll": 2.87586091813587,
+            "val_recovery": 0.10421219805166834,
+            "val_interface_nll": 2.916183290027437,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 250,
+            "train_nll": 2.856305908767771,
+            "val_nll": 2.866639114561535,
+            "val_recovery": 0.09231182666761535,
+            "val_interface_nll": 2.9028114477793374,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 300,
+            "train_nll": 2.8408951075760633,
+            "val_nll": 2.8697757039751326,
+            "val_recovery": 0.09730420261621475,
+            "val_interface_nll": 2.904008524758475,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 350,
+            "train_nll": 2.835539557717063,
+            "val_nll": 2.8377072243463424,
+            "val_recovery": 0.10878155238571621,
+            "val_interface_nll": 2.906069040298462,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 400,
+            "train_nll": 2.8337301363200296,
+            "val_nll": 2.854645252227783,
+            "val_recovery": 0.10287635844378244,
+            "val_interface_nll": 2.923390206836519,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 450,
+            "train_nll": 2.8295817769768634,
+            "val_nll": 2.8466304256802513,
+            "val_recovery": 0.10297935526995432,
+            "val_interface_nll": 2.912891297113328,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 500,
+            "train_nll": 2.82644330649387,
+            "val_nll": 2.841987689336141,
+            "val_recovery": 0.10380308010748454,
+            "val_interface_nll": 2.9010662124270485,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 550,
+            "train_nll": 2.815257886628727,
+            "val_nll": 2.865705887476603,
+            "val_recovery": 0.09732051034058843,
+            "val_interface_nll": 2.941882258369809,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 600,
+            "train_nll": 2.8161112761997678,
+            "val_nll": 2.850615138099307,
+            "val_recovery": 0.10224954358169011,
+            "val_interface_nll": 2.917497169403803,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 650,
+            "train_nll": 2.8034383139132344,
+            "val_nll": 2.8412880443391346,
+            "val_recovery": 0.09967960399531182,
+            "val_interface_nll": 2.929675919669015,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 700,
+            "train_nll": 2.814640853232715,
+            "val_nll": 2.847188109443301,
+            "val_recovery": 0.1013596806497801,
+            "val_interface_nll": 2.931616465250651,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 750,
+            "train_nll": 2.796590307097891,
+            "val_nll": 2.821548893338158,
+            "val_recovery": 0.10661719579781805,
+            "val_interface_nll": 2.880123433612642,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 800,
+            "train_nll": 2.801617585695707,
+            "val_nll": 2.838887714204334,
+            "val_recovery": 0.11888951169592994,
+            "val_interface_nll": 2.9246342295692083,
+            "val_argmax_top": "V"
+          }
+        ],
+        "train_nll_at_best": 2.796590307097891,
+        "final_train_nll": 2.801617585695707,
+        "final_val_nll": 2.838887714204334,
+        "test_argmax_freq": [
+          0.08576966650489772,
+          0.0,
+          0.04183492188732587,
+          0.07510902993865413,
+          0.0,
+          0.21305120437302355,
+          0.0,
+          0.0,
+          0.08690033952038097,
+          0.2976901974668027,
+          0.0,
+          0.0,
+          0.0016152479512771334,
+          0.0,
+          0.00016152479525934107,
+          0.09529962903031566,
+          0.013245033154929302,
+          0.08932321188477081,
+          0.0,
+          0.0
+        ],
+        "params": 203034,
+        "steps": 800
+      }
+    ],
+    "Q": [
+      {
+        "best_step": 800,
+        "best_val_nll": 2.8459893408275785,
+        "history": [
+          {
+            "step": 1,
+            "train_nll": 2.980608499967135,
+            "val_nll": 2.97478681518918,
+            "val_recovery": 0.06503693023253054,
+            "val_interface_nll": 3.0021676336015974,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 50,
+            "train_nll": 2.909386535902401,
+            "val_nll": 2.920512903304327,
+            "val_recovery": 0.07561973287236123,
+            "val_interface_nll": 2.932953107924688,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 100,
+            "train_nll": 2.906626098917359,
+            "val_nll": 2.9165478547414145,
+            "val_recovery": 0.07368548737750166,
+            "val_interface_nll": 2.9375836849212646,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 150,
+            "train_nll": 2.89270101782881,
+            "val_nll": 2.9099857353028797,
+            "val_recovery": 0.09160369882980983,
+            "val_interface_nll": 2.936279546646845,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 200,
+            "train_nll": 2.8865006042249277,
+            "val_nll": 2.908448185239519,
+            "val_recovery": 0.08415889012671653,
+            "val_interface_nll": 2.9311411380767822,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 250,
+            "train_nll": 2.873196625765109,
+            "val_nll": 2.901217188153948,
+            "val_recovery": 0.08214785930301462,
+            "val_interface_nll": 2.9434168225242976,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 300,
+            "train_nll": 2.8606983848385044,
+            "val_nll": 2.894757702237084,
+            "val_recovery": 0.09511181552495275,
+            "val_interface_nll": 2.93534068834214,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 350,
+            "train_nll": 2.8555251807321755,
+            "val_nll": 2.895665248235067,
+            "val_recovery": 0.09254142783937,
+            "val_interface_nll": 2.963083187739054,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 400,
+            "train_nll": 2.8647793489736277,
+            "val_nll": 2.9152598835173107,
+            "val_recovery": 0.0810140474211602,
+            "val_interface_nll": 2.9393688497089205,
+            "val_argmax_top": "D"
+          },
+          {
+            "step": 450,
+            "train_nll": 2.8508764913865736,
+            "val_nll": 2.863406873884655,
+            "val_recovery": 0.10607116953248069,
+            "val_interface_nll": 2.926213184992472,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 500,
+            "train_nll": 2.8455340134236087,
+            "val_nll": 2.894974719910395,
+            "val_recovery": 0.09521531508792014,
+            "val_interface_nll": 2.943638574509394,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 550,
+            "train_nll": 2.8271512146040556,
+            "val_nll": 2.8594796771094915,
+            "val_recovery": 0.0980464777066594,
+            "val_interface_nll": 2.9268253644307456,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 600,
+            "train_nll": 2.8352682623829875,
+            "val_nll": 2.8856863294328963,
+            "val_recovery": 0.10526460125332787,
+            "val_interface_nll": 2.9451315175919306,
+            "val_argmax_top": "K"
+          },
+          {
+            "step": 650,
+            "train_nll": 2.823055766401313,
+            "val_nll": 2.8703144164312455,
+            "val_recovery": 0.09745711726801735,
+            "val_interface_nll": 2.919613770076207,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 700,
+            "train_nll": 2.817330514912283,
+            "val_nll": 2.870738006773449,
+            "val_recovery": 0.09562563878439721,
+            "val_interface_nll": 2.9474174295152937,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 750,
+            "train_nll": 2.8146951120772283,
+            "val_nll": 2.8539813586643765,
+            "val_recovery": 0.10266292520931788,
+            "val_interface_nll": 2.9143480573381697,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 800,
+            "train_nll": 2.805653070792174,
+            "val_nll": 2.8459893408275785,
+            "val_recovery": 0.10731655323789233,
+            "val_interface_nll": 2.9213018530891057,
+            "val_argmax_top": "L"
+          }
+        ],
+        "train_nll_at_best": 2.805653070792174,
+        "final_train_nll": 2.805653070792174,
+        "final_val_nll": 2.8459893408275785,
+        "test_argmax_freq": [
+          0.06590211598262458,
+          0.0,
+          0.10547569046975472,
+          0.19899854665834826,
+          0.0,
+          0.04070424808628834,
+          0.0,
+          0.0,
+          0.0610563724004352,
+          0.3934744018294125,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.009529962797398435,
+          0.002099822344576741,
+          0.12275884279740866,
+          0.0,
+          0.0
+        ],
+        "params": 203034,
+        "steps": 800
+      },
+      {
+        "best_step": 750,
+        "best_val_nll": 2.8571450256166004,
+        "history": [
+          {
+            "step": 1,
+            "train_nll": 2.9952140893691626,
+            "val_nll": 3.0122542948949906,
+            "val_recovery": 0.05848777737645876,
+            "val_interface_nll": 3.0178969587598528,
+            "val_argmax_top": "A"
+          },
+          {
+            "step": 50,
+            "train_nll": 2.906813610961665,
+            "val_nll": 2.905754418600173,
+            "val_recovery": 0.09292741474651155,
+            "val_interface_nll": 2.92745033899943,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 100,
+            "train_nll": 2.9052938509098576,
+            "val_nll": 2.908427533649263,
+            "val_recovery": 0.08231779932975769,
+            "val_interface_nll": 2.9339443161374046,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 150,
+            "train_nll": 2.885592340033649,
+            "val_nll": 2.9053527968270436,
+            "val_recovery": 0.09077658752600352,
+            "val_interface_nll": 2.926053047180176,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 200,
+            "train_nll": 2.8729561631218257,
+            "val_nll": 2.8989991346995034,
+            "val_recovery": 0.08829074814206078,
+            "val_interface_nll": 2.9423869450887046,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 250,
+            "train_nll": 2.862015471869693,
+            "val_nll": 2.8860233397710893,
+            "val_recovery": 0.09381721257453873,
+            "val_interface_nll": 2.926876806077503,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 300,
+            "train_nll": 2.8640745430837424,
+            "val_nll": 2.8806824797675725,
+            "val_recovery": 0.0911838799005463,
+            "val_interface_nll": 2.9229410602932884,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 350,
+            "train_nll": 2.8626998737975433,
+            "val_nll": 2.884925535746983,
+            "val_recovery": 0.09834298846267518,
+            "val_interface_nll": 2.921201126916068,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 400,
+            "train_nll": 2.8457956025094697,
+            "val_nll": 2.871589422225952,
+            "val_recovery": 0.10144398450141862,
+            "val_interface_nll": 2.9314804644811723,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 450,
+            "train_nll": 2.8420016304318443,
+            "val_nll": 2.8631703626541865,
+            "val_recovery": 0.10037615327608018,
+            "val_interface_nll": 2.897433871314639,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 500,
+            "train_nll": 2.8334627273755197,
+            "val_nll": 2.8710011527651833,
+            "val_recovery": 0.10601172933266276,
+            "val_interface_nll": 2.938998824074155,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 550,
+            "train_nll": 2.8379411975264826,
+            "val_nll": 2.8693001724424816,
+            "val_recovery": 0.10169191977807454,
+            "val_interface_nll": 2.9251590002150762,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 600,
+            "train_nll": 2.824589853798037,
+            "val_nll": 2.8632500285194036,
+            "val_recovery": 0.09721283206627482,
+            "val_interface_nll": 2.9216562452770414,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 650,
+            "train_nll": 2.8447424981977556,
+            "val_nll": 2.883851164863223,
+            "val_recovery": 0.09969813412144071,
+            "val_interface_nll": 2.923459495816912,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 700,
+            "train_nll": 2.8235083604470277,
+            "val_nll": 2.8595576853979203,
+            "val_recovery": 0.10007918093885694,
+            "val_interface_nll": 2.904975664047968,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 750,
+            "train_nll": 2.817441102785942,
+            "val_nll": 2.8571450256166004,
+            "val_recovery": 0.10375440156175977,
+            "val_interface_nll": 2.9180508908771334,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 800,
+            "train_nll": 2.8354631815201197,
+            "val_nll": 2.876768702552432,
+            "val_recovery": 0.09930589245188803,
+            "val_interface_nll": 2.9068425723484586,
+            "val_argmax_top": "L"
+          }
+        ],
+        "train_nll_at_best": 2.817441102785942,
+        "final_train_nll": 2.8354631815201197,
+        "final_val_nll": 2.876768702552432,
+        "test_argmax_freq": [
+          0.198352447875654,
+          0.0,
+          0.07349378104210189,
+          0.06590211600684408,
+          0.0,
+          0.09433048023318623,
+          0.0,
+          0.0,
+          0.057341302542713614,
+          0.21272815504726464,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.026328541490078898,
+          0.012114359527866023,
+          0.2594088194547322,
+          0.0,
+          0.0
+        ],
+        "params": 203034,
+        "steps": 800
+      },
+      {
+        "best_step": 750,
+        "best_val_nll": 2.842098939986456,
+        "history": [
+          {
+            "step": 1,
+            "train_nll": 3.0047074609147364,
+            "val_nll": 3.012269996461414,
+            "val_recovery": 0.049388905632353965,
+            "val_interface_nll": 3.0027868634178523,
+            "val_argmax_top": "Q"
+          },
+          {
+            "step": 50,
+            "train_nll": 2.9175703653366694,
+            "val_nll": 2.9144531204586936,
+            "val_recovery": 0.07614667624944732,
+            "val_interface_nll": 2.929692960920788,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 100,
+            "train_nll": 2.907521415145803,
+            "val_nll": 2.9114860012417747,
+            "val_recovery": 0.0800663631941591,
+            "val_interface_nll": 2.9331108161381314,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 150,
+            "train_nll": 2.895371801647551,
+            "val_nll": 2.9118607498350597,
+            "val_recovery": 0.0938435730834802,
+            "val_interface_nll": 2.931699900400071,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 200,
+            "train_nll": 2.8769968289595385,
+            "val_nll": 2.905127831867763,
+            "val_recovery": 0.09689571903575034,
+            "val_interface_nll": 2.9416801588875905,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 250,
+            "train_nll": 2.869494601007386,
+            "val_nll": 2.8867569537389848,
+            "val_recovery": 0.09568931357491584,
+            "val_interface_nll": 2.923279012952532,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 300,
+            "train_nll": 2.8566116247421656,
+            "val_nll": 2.878306366148449,
+            "val_recovery": 0.09525733724946067,
+            "val_interface_nll": 2.924575101761591,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 350,
+            "train_nll": 2.867578251934274,
+            "val_nll": 2.881366264252436,
+            "val_recovery": 0.10973683851105827,
+            "val_interface_nll": 2.9506568113962808,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 400,
+            "train_nll": 2.842894087304602,
+            "val_nll": 2.873625176293509,
+            "val_recovery": 0.10536182387953713,
+            "val_interface_nll": 2.947844766435169,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 450,
+            "train_nll": 2.836486544086661,
+            "val_nll": 2.8600116343725297,
+            "val_recovery": 0.10003531280727614,
+            "val_interface_nll": 2.8994394824618386,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 500,
+            "train_nll": 2.832111868824992,
+            "val_nll": 2.860848903656006,
+            "val_recovery": 0.10625367043983369,
+            "val_interface_nll": 2.9097263472420827,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 550,
+            "train_nll": 2.8285875648329584,
+            "val_nll": 2.8804945605141774,
+            "val_recovery": 0.10097229853272438,
+            "val_interface_nll": 2.9355444681076777,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 600,
+            "train_nll": 2.8253861257246324,
+            "val_nll": 2.8585689862569175,
+            "val_recovery": 0.1025224540914808,
+            "val_interface_nll": 2.894266117186773,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 650,
+            "train_nll": 2.8359590877186167,
+            "val_nll": 2.8830775192805698,
+            "val_recovery": 0.10851954207533882,
+            "val_interface_nll": 2.9501115481058755,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 700,
+            "train_nll": 2.8210846016179154,
+            "val_nll": 2.859575930095854,
+            "val_recovery": 0.09922017192556745,
+            "val_interface_nll": 2.9262217453547885,
+            "val_argmax_top": "V"
+          },
+          {
+            "step": 750,
+            "train_nll": 2.808340972953743,
+            "val_nll": 2.842098939986456,
+            "val_recovery": 0.10297481431847527,
+            "val_interface_nll": 2.895790383929298,
+            "val_argmax_top": "L"
+          },
+          {
+            "step": 800,
+            "train_nll": 2.8074645334746178,
+            "val_nll": 2.860938764753796,
+            "val_recovery": 0.1103573487628074,
+            "val_interface_nll": 2.9178315911974226,
+            "val_argmax_top": "V"
+          }
+        ],
+        "train_nll_at_best": 2.808340972953743,
+        "final_train_nll": 2.8074645334746178,
+        "final_val_nll": 2.860938764753796,
+        "test_argmax_freq": [
+          0.09513810316578789,
+          0.00016152480217919868,
+          0.0846389929370293,
+          0.20174446724147024,
+          0.0,
+          0.06735583887565018,
+          0.0,
+          0.0,
+          0.10079147192712574,
+          0.3028589878258365,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.00016152479345416082,
+          0.06654821521977296,
+          0.029559037396920465,
+          0.051041835012521214,
+          0.0,
+          0.0
+        ],
+        "params": 203034,
+        "steps": 800
+      }
+    ]
+  },
+  "recovery_effect": {
+    "point": -0.003978150627679293,
+    "lo": -0.01101569342944357,
+    "hi": 0.0026274650047222754,
+    "n_clusters": 30,
+    "resamples": 2000
+  }
+}

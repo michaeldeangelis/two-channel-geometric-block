@@ -247,7 +247,7 @@ Whole-complex recovery is 0.107 for C, 0.094 for N, and 0.098 for Q. Interface N
 
 The fusion layer receives s = log(1+ρ), not ρ itself. Rebuilding the sum is mean times (eps + exp(s) − 1).
 
-The inputs still determine the sum. A finite MLP has to learn that nonlinear map. Having the information and having an equally easy computation are different. Separately trained gates also need not match, because the aggregation changes the gradients into the gate. The result is about the whole training run.
+The inputs still determine the sum. A finite MLP has to learn that nonlinear map. Having the information and having an equally easy computation are different. A fixed-weight reconstruction can match while separately trained models still differ. Different gradient trajectories, activation scale, regularization, and generalization all remain compatible. The reconstruction check establishes equivalence at fixed weights. It does not identify which of those produced the training gap.
 
 The claim this supports: in this architecture and training regime, directly supplying an unnormalized gated aggregate improves held-out likelihood relative to a normalized aggregate, even when gate mass remains available. It does not separate easier optimization, activation scale, implicit regularization, or generalization of the supplied product.
 
@@ -269,6 +269,26 @@ The deeper run locked 429 train / 21 validation / 30 test from the same 480 hete
 
 Test NLL is 2.858 for the sum and 2.870 for the mean plus mass. Whole-complex recovery is 0.113 and 0.112. Interface NLL is 2.872 and 2.895; the paired interface gap is +0.023 with interval [+0.004, +0.040], and the mean is worse on 21/30. Recovery’s interval includes zero, [−0.006, +0.004]. Recovery is not separated. Seeds were averaged first. The interval does not include retraining or a new partition.
 
-C’s three seeds all checkpointed at step 350, with validation NLL higher at step 400. Two Q seeds were still best at step 400. The comparison retrains both aggregations, so the gates need not match. The 0.012 nat gap is a training result. It is smaller than the 0.029 nat gap for the same substitution in the one-block model, on a different locked split, and the interval still excludes zero.
+Test NLL 2.858 versus 2.870 is a gap of 0.012 nats. That raises the geometric mean of the correct-residue probabilities by exp(0.012) ≈ 1.012, about 1.2% higher, under the same complex weighting as the NLL. Equivalently, perplexity is about 1.2% lower. exp(−0.012) is the perplexity ratio, not the probability ratio.
 
-The advantage of supplying the unnormalized aggregate survives a deeper encoder. It does not say which of optimization, scale, regularization, or generalization produces it.
+C’s three seeds all checkpointed at step 350, with validation NLL higher at step 400. Two Q seeds were still best at step 400. The 0.012 nat figure is smaller than the 0.029 nat one-block gap, and the complexes and the split are different, so that difference is not evidence that depth reduced the effect. Greater depth shows that the aggregation result survives a larger encoder. It does not show a more capable inverse folder. The reconstruction match does not identify upstream gradients as the cause.
+
+The advantage of supplying the unnormalized aggregate survives this deeper encoder. It does not say which of optimization, scale, regularization, or generalization produces it.
+
+## Stage 8 follow-up — same test, twice the steps
+
+The 400-step result stands. Two mean-plus-mass seeds selected step 400, so their best validation score may lie later. This follow-up retrains both C and Q from the same seeds for 800 steps, twice the original budget, chosen before the run. Checkpointing stays the lowest unweighted mean of per-complex validation NLL. The test is not used to stop. The test set is the one already examined in `results/deep.json`. No new split. No one-block variants.
+
+Reading, fixed before the run: if the selected mean-plus-mass checkpoints move past 400 and the Q−C interval still excludes zero, the advantage survived the extra training. If the interval includes zero, the extra training closed the gap. If a seed is still best at step 800, the boundary is still open and this follow-up stops there.
+
+Ran on CPU after those rules were written. Record: `results/deep_budget.json`. Validation NLL through step 400 matches the 400-step run exactly, so this is that trajectory continued.
+
+Selected steps are 800, 450, and 750 for the sum, and 800, 750, and 750 for the mean plus mass. The two mean-plus-mass seeds that had selected step 400 now select step 750. One seed of each aggregation is still best at step 800. The boundary stays open for those two seeds, and this follow-up stops.
+
+| Comparison | Effect on NLL | 95% cluster interval | Clusters |
+|---|---|---|---|
+| Q − C | +0.013 | [+0.004, +0.022] | Q worse on 22/30 |
+
+Test NLL is 2.836 for the sum and 2.850 for the mean plus mass. The factor on the geometric mean of the correct-residue probabilities is exp(0.013) ≈ 1.013, about 1.3% higher, with the same complex weighting as the NLL. Perplexity is about 1.3% lower. exp(−0.013) is the perplexity ratio. Interface NLL differs by +0.020, interval [+0.005, +0.036], with the mean worse on 17 of 30. Recovery differs by −0.004, interval [−0.011, +0.003], which includes zero.
+
+The extra training did not close the gap. The 400-step result was not an artifact of stopping those two mean-plus-mass seeds on their last checkpoint.
