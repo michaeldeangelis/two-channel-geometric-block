@@ -318,6 +318,33 @@ Ran on CPU after those rules were written. Record: `results/strong.json`. 478 of
 | C − P | −0.218 | [−0.261, −0.169] | C better on 39/39 |
 | Q − C | +0.006 | [−0.011, +0.030] | Q worse on 15/39 |
 
-Test NLL is 2.633 for the sum, 2.634 for the mean plus mass, 2.851 with the frame channels removed, and 2.912 for training-set frequencies. The sum’s advantage over frequencies is a factor of exp(0.280) ≈ 1.32 on the geometric mean of the correct-residue probabilities, about 32% higher, and about 32% lower perplexity. Recovery is 0.176 for the sum and 0.073 for frequencies, a cluster effect of +0.107 with interval [+0.083, +0.133]. Recovery and interface NLL do not separate the sum from the mean plus mass. Those intervals include zero.
+Test NLL is 2.633 for the sum, 2.634 for the mean plus mass, 2.851 with the frame channels removed, and 2.912 for training-set frequencies. Those four numbers give each complex equal weight. Their paired difference is +0.001 nat. The table’s +0.006 nat is the mean of the seven cluster means, which gives a cluster of 3 the same vote as a cluster of 12. Under one weighting, the average of the paired differences equals the difference of the averages.
 
-Every sum seed and every mean-plus-mass seed selected step 400. The plain control selected steps 300, 400, and 400. The run is not extended. The composition gate and the frame-feature gate both pass. The aggregation comparison does not: a gap the size of the earlier 0.013 nats would sit inside this interval. Seven clusters do not establish that the sum’s advantage disappeared. They do establish that it is no longer the effect this test can see, once the encoder is using backbone frames.
+The cluster-weighted gap of 0.280 nats over frequencies raises the geometric mean of the correct-residue probabilities by exp(0.280) ≈ 1.323, about 32.3% higher. Perplexity falls by exp(−0.280) ≈ 0.756, about 24.4% lower. Reciprocal percentages match only when the gap is small. Recovery is 0.176 for the sum and 0.073 for frequencies, a cluster effect of +0.107 with interval [+0.083, +0.133]. Recovery and interface NLL do not separate the sum from the mean plus mass. Those intervals include zero.
+
+The interval [−0.011, +0.030] on the aggregation gap has room for a modest sum advantage and a modest disadvantage. Detectability depends on the spread of the paired differences, the number of clusters, and training variability. It is not a consequence of sitting near the frequency baseline. This run does not show that frame features removed the earlier advantage. The sum stays the working aggregation because of the earlier results, not because it won this comparison. Every sum seed and every mean-plus-mass seed selected step 400, so the result is a fixed budget. That experiment is not reopened.
+
+Every sum seed and every mean-plus-mass seed selected step 400. The plain control selected steps 300, 400, and 400. The run is not extended. The composition gate and the frame-feature gate both pass. The aggregation comparison does not: a gap the size of the earlier 0.013 nats would sit inside this interval. Seven clusters do not establish that the sum’s advantage disappeared.
+
+## Stage 10 — more families, budget set on the development validation
+
+The frame features stay. The sum stays the working aggregation. The question is whether that aggregation still changes held-out likelihood once those features are present, on more independent families than the seven above.
+
+The stage 9 validation is the development set. Every sum seed and every mean-plus-mass seed selected step 400 there, and validation NLL was lower at step 400 than at step 350. The next budget is therefore 800 steps, chosen before the new test is scored. The checkpoint remains the lowest unweighted mean of per-complex validation NLL on that same development set. The new test is not used to stop. If a seed is still best at step 800, that is reported and the run stops.
+
+New complexes are heterodimers released from 2022-06-02 through 2026-09-01, with the same chain count, length, resolution ≤ 2.5, and contact rules. A test cluster has to be entirely new and below 30% identity to every other partition, in either chain order. The smallest such clusters are held out until 24 clusters, or until they run out. If fewer than 15 clusters qualify, the resolution cap is widened once, to 3.0, on the same dates. If that still yields fewer than 15, there is no training run.
+
+Both models use the frame edges. C is the gated sum. Q is the mean plus log mass. Depth stays 3. No frame-off control and no extra steps on the seven-cluster test. Primary endpoint: Q−C whole-complex NLL, as the mean of cluster means, with the same 95% cluster bootstrap and seeds averaged first. The complex-weighted paired difference is reported beside it and labeled as such. C−F on the new families is a check that the encoder still beats composition, not a new architecture question.
+
+Reading, fixed before the run. If the Q−C interval lies entirely above zero, the sum’s advantage is detected on these families. If it lies entirely below zero, the mean plus mass is detected as better. If the interval includes zero, the comparison stays unresolved, and the sum remains the working aggregation on the earlier evidence. A result on these families does not reopen the seven-cluster test and does not by itself say the earlier advantage was eliminated.
+
+Ran on CPU after those rules were written. Record: `results/families.json`. The 2.5 Å search added 148 heterodimers. Forty-three new clusters were eligible, so the resolution cap stayed at 2.5. The smallest 24 are the test, and each is a single complex. Train 510, development validation 89, test 24. Worst cross-partition identity 0.279. Five complexes lacked a complete backbone and were left out. Because every test cluster has size 1, the cluster-weighted mean and the complex-weighted mean are the same number.
+
+| Comparison | Weighting | Effect on NLL | 95% cluster interval | Complexes |
+|---|---|---|---|---|
+| Q − C | cluster = complex | +0.009 | [−0.001, +0.018] | Q worse on 17/24 |
+| C − F | cluster = complex | −0.395 | [−0.432, −0.361] | C better on 24/24 |
+
+Test NLL is 2.508 for the sum, 2.517 for the mean plus mass, and 2.903 for frequencies. The difference of those averages is the paired difference, 0.009 nat. The aggregation interval includes zero, so the comparison stays unresolved. The sum remains the working aggregation on the earlier evidence. This does not show that frame features removed that earlier advantage.
+
+The frequency gap of 0.395 nats raises the geometric mean of the correct-residue probabilities by exp(0.395) ≈ 1.484, about 48.4% higher. Perplexity falls by exp(−0.395) ≈ 0.674, about 32.6% lower. Selected steps are 800, 750, and 750 for the sum, and 800, 800, and 750 for the mean plus mass. One sum seed and two mean-plus-mass seeds are still best at step 800. The run stops.

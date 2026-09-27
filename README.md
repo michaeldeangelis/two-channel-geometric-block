@@ -1,10 +1,19 @@
 # Two-channel geometric block
 
-Backbone-frame edges beat training-set amino-acid frequencies by 0.280 nats on a fresh locked test. A 95% cluster interval is 0.228 to 0.327, on 7 clusters. The same model with those frame channels removed is 0.218 nats worse. The gated sum and the mean plus log mass are not separated: their gap is 0.006 nats, interval −0.011 to +0.030.
+On 24 new singleton families, the gated sum and the mean plus log mass are still not separated. The gap is 0.009 nats. A 95% cluster interval is −0.001 to +0.018, and the mean plus mass is worse on 17 of 24. Every test cluster has one complex, so the cluster-weighted mean and the complex-weighted mean are the same number. The sum stays the working aggregation because of the earlier results. This run does not show that it won.
 
-That 0.280 nat drop raises the geometric mean of the correct-residue probabilities by exp(0.280) ≈ 1.32, about 32% higher, with the same complex weighting as the NLL. Perplexity is about 32% lower. The earlier sum-versus-mean series is closed. Its 0.013 nat gap, after 800 steps, was robustness on one already examined test. This run does not extend it.
+The same frame-edge model beats training-set frequencies by 0.395 nats on those families, interval 0.361 to 0.432, better on 24 of 24. That raises the geometric mean of the correct-residue probabilities by exp(0.395) ≈ 1.484, about 48.4% higher. Perplexity falls by exp(−0.395) ≈ 0.674, about 32.6% lower. Those two percentages are not the same. The budget was 800 steps, set from the earlier validation curves before this test was scored. One sum seed and two mean-plus-mass seeds are still best at step 800. The run stops. Record: `results/families.json`.
 
 The definition is in [hypothesis.md](hypothesis.md). The decision rule and the reading of each result are in [experiments.md](experiments.md).
+
+## Twenty-four families
+
+Released 2022-06-02 through 2026-09-01, same heterodimer filters, resolution at most 2.5 Å. Forty-three new clusters qualified. The test is the smallest 24, each a single complex. Train 510. The checkpoint set is the previous frame-model validation, 89 complexes after new homologs of that set were kept with it. Worst cross-partition identity 0.279. Depth stays 3. Both models use the frame edges. Record: `results/families.json`.
+
+| Comparison | Effect on NLL | 95% interval | Complexes |
+|---|---|---|---|
+| Mean-plus-mass − sum | +0.009 | [−0.001, +0.018] | mean-plus-mass worse on 17/24 |
+| Sum − frequencies | −0.395 | [−0.432, −0.361] | sum better on 24/24 |
 
 ## Frame edges
 
@@ -16,7 +25,7 @@ Three blocks, the same depth as the previous encoder. Each edge keeps the 10 Å 
 | Sum − frame channels off | −0.218 | [−0.261, −0.169] | sum better on 39/39 |
 | Mean-plus-mass − sum | +0.006 | [−0.011, +0.030] | mean-plus-mass worse on 15/39 |
 
-Test NLL is 2.633, 2.634, 2.851, and 2.912. Recovery is 0.176 for the sum and 0.073 for frequencies, interval 0.083 to 0.133 on the difference. Recovery and interface NLL do not separate the sum from the mean plus mass. Seven clusters leave room for a gap as small as the earlier 0.013 nats. They do not show that gap.
+Test NLL is 2.633 for the sum and 2.634 for the mean plus mass when each complex has one vote. That paired difference is 0.001 nat. The +0.006 nat in the table gives each of the seven clusters one vote. Under one weighting, the average of the paired differences equals the difference of the averages. The 0.280 nat frequency gap raises correct-residue geometric-mean probability by exp(0.280) ≈ 1.323, about 32.3% higher, and lowers perplexity by exp(−0.280) ≈ 0.756, about 24.4%. Recovery is 0.176 for the sum and 0.073 for frequencies, interval 0.083 to 0.133 on the difference. Recovery and interface NLL do not separate the sum from the mean plus mass. The aggregation interval has room for a modest advantage in either direction. Seven clusters do not show that frame features removed the earlier advantage. The sum stays the working aggregation on the earlier evidence. Every sum seed and every mean-plus-mass seed selected step 400, so that result is a fixed budget and is not reopened.
 
 ## Closed series
 
@@ -91,9 +100,10 @@ python check_reconstruct.py
 python run_deep.py
 python run_deep_budget.py
 python run_strong.py
+python run_families.py
 ```
 
-CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0. Inverse-folding scripts download PDB files into `data/`, which is gitignored. A locked split file is reused when it is already present. `check_reconstruct.py` needs the magnitude lock. `run_deep.py` needs the earlier locks so it can keep those complexes out of the test. `run_deep_budget.py` reuses the deep lock and does not make a new split. `run_strong.py` reads N, CA, and C from those PDB files and keeps every earlier validation and test complex out of its test.
+CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0. Inverse-folding scripts download PDB files into `data/`, which is gitignored. A locked split file is reused when it is already present. `check_reconstruct.py` needs the magnitude lock. `run_deep.py` needs the earlier locks so it can keep those complexes out of the test. `run_deep_budget.py` reuses the deep lock and does not make a new split. `run_strong.py` reads N, CA, and C from those PDB files and keeps every earlier validation and test complex out of its test. `run_families.py` appends heterodimers released after 2022-06-01 and holds out new clusters only.
 
 ## Layout
 
@@ -105,6 +115,7 @@ CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0. Inve
 | `run_deep_budget.py` | Same comparison at 800 steps, on that same test |
 | `frames.py` | Backbone-frame edge features |
 | `run_strong.py` | Frame edges, composition gate, then sum versus mean-plus-mass |
+| `run_families.py` | That aggregation question on 24 new singleton families |
 | `check_reconstruct.py` | Fixed-checkpoint logit comparison |
 | `run_magnitude.py` | One-block sum versus mean on a fresh locked test |
 | `run_confirm.py` | Locked gated-sum versus softmax confirmation |

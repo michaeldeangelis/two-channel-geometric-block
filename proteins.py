@@ -32,7 +32,13 @@ def _fetch(url: str) -> bytes:
         return resp.read()
 
 
-def search_entries(n: int = 60, start: int = 0) -> list[str]:
+def search_entries(
+    n: int = 60,
+    start: int = 0,
+    released_from: str = "2000-01-01",
+    released_to: str = "2022-06-01",
+    resolution: float = 2.5,
+) -> list[str]:
     query = {
         "query": {
             "type": "group",
@@ -62,7 +68,7 @@ def search_entries(n: int = 60, start: int = 0) -> list[str]:
                     "parameters": {
                         "attribute": "rcsb_entry_info.resolution_combined",
                         "operator": "less_or_equal",
-                        "value": 2.5,
+                        "value": resolution,
                     },
                 },
                 {
@@ -80,7 +86,7 @@ def search_entries(n: int = 60, start: int = 0) -> list[str]:
                     "parameters": {
                         "attribute": "rcsb_accession_info.initial_release_date",
                         "operator": "range",
-                        "value": {"from": "2000-01-01", "to": "2022-06-01"},
+                        "value": {"from": released_from, "to": released_to},
                     },
                 },
             ],
@@ -290,6 +296,59 @@ def audit_partitions(complexes: list[dict], split: dict, cutoff: float = 0.30) -
         "dev_ids_in_val_or_test": dev_leaked,
         "passed": not violations and not dev_leaked,
     }
+
+
+def extend_cache(
+    limit: int,
+    released_from: str,
+    released_to: str,
+    resolution: float = 2.5,
+) -> list[dict]:
+    """Append heterodimers from a later release window. Does not rewrite split files."""
+    PDB_DIR.mkdir(parents=True, exist_ok=True)
+    kept = load_cache()
+    have = {c["id"] for c in kept}
+    start = 0
+    page = 200
+    added = 0
+    seen = 0
+    while added < limit:
+        ids = search_entries(page, start, released_from, released_to, resolution)
+        print(f"search page {start} returned {len(ids)}", flush=True)
+        if not ids:
+            break
+        start += len(ids)
+        for pdb_id in ids:
+            seen += 1
+            if added >= limit:
+                break
+            if pdb_id in have:
+                continue
+            path = PDB_DIR / f"{pdb_id}.pdb"
+            if not path.exists():
+                try:
+                    path.write_bytes(_fetch(f"https://files.rcsb.org/download/{pdb_id}.pdb"))
+                except Exception:
+                    continue
+            parsed = parse_pdb(path.read_text(errors="ignore"))
+            if parsed is None:
+                continue
+            contacts = _contacts(parsed["chains"][0]["xyz"], parsed["chains"][1]["xyz"])
+            back = _contacts(parsed["chains"][1]["xyz"], parsed["chains"][0]["xyz"])
+            if contacts + back < 8:
+                continue
+            parsed["id"] = pdb_id
+            parsed["interface_contacts"] = contacts + back
+            kept.append(parsed)
+            have.add(pdb_id)
+            added += 1
+            print(f"added {added}/{limit} {pdb_id} contacts {contacts + back} after {seen}", flush=True)
+        if len(ids) < page:
+            break
+        (ROOT / "complexes.json").write_text(json.dumps(kept))
+    (ROOT / "complexes.json").write_text(json.dumps(kept))
+    print(f"cache {len(kept)} added {added}", flush=True)
+    return kept
 
 
 def load_cache() -> list[dict]:
