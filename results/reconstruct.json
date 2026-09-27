@@ -1,0 +1,9 @@
+{
+  "seed": 0,
+  "best_step": 300,
+  "max_abs_logit": 8.344650268554688e-07,
+  "mean_abs_logit": 5.416159016463303e-08,
+  "n_logits": 128600,
+  "eps": 1e-08,
+  "formula": "mean * (eps + exp(log1p(rho)) - 1)"
+}

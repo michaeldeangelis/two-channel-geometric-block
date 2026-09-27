@@ -87,9 +87,10 @@ def _slim(rows: list[dict]) -> list[dict]:
     return [{k: row[k] for k in keep} for row in rows]
 
 
-def train_one(name: str, variant: str, hidden: int, geometry: bool, seed: int, train, val, test) -> dict:
+def train_one(name: str, variant: str, hidden: int, geometry: bool, seed: int, train, val, test, build=None, return_model: bool = False) -> dict:
     torch.manual_seed(seed)
-    model = InverseFolder(variant, hidden, geometry=geometry)
+    maker = build or InverseFolder
+    model = maker(variant, hidden, geometry=geometry)
     opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
     order = list(range(len(train)))
     history = []
@@ -138,7 +139,7 @@ def train_one(name: str, variant: str, hidden: int, geometry: bool, seed: int, t
     test_rows = _rows(model, test)
     chosen = next(row for row in history if row["step"] == best_step)
     final = history[-1]
-    return {
+    done = {
         "best_step": best_step,
         "best_val_nll": best_score,
         "history": [{k: v for k, v in row.items() if k != "val_argmax_freq"} | {"val_argmax_top": AA[max(range(len(AA)), key=lambda i: row["val_argmax_freq"][i])]} for row in history],
@@ -149,6 +150,9 @@ def train_one(name: str, variant: str, hidden: int, geometry: bool, seed: int, t
         "test_argmax_freq": _mix(test_rows, "argmax_freq"),
         "params": parameter_count(model),
     }
+    if return_model:
+        done["model"] = model
+    return done
 
 
 def _paired(test_rows: dict[str, list[dict]]) -> list[dict]:

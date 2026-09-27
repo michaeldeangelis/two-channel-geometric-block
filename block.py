@@ -103,6 +103,7 @@ class TwoChannelBlock(nn.Module):
         self.radius = radius
         # N and Q divide the gated sum by gate mass. Q also keeps log(1+rho).
         self.normalize = variant in {"N", "Q"}
+        self.reconstruct = False
         self.split = variant in {"E", "S"}
         self.use_select = variant in {"A", "B", "D", "R", "E"}
         self.use_sum = variant in {"C", "D", "E", "S", "N", "Q"}
@@ -267,6 +268,12 @@ class TwoChannelBlock(nn.Module):
             density = msg["rho"]
         m_select = msg["m_select"] if self.use_select else torch.zeros_like(msg["m_select"])
         m_sum = msg["m_sum"] if self.use_sum else torch.zeros_like(msg["m_sum"])
+        if self.reconstruct:
+            # s = log(1+rho). Rebuild the sum as mean * (eps + exp(s) - 1).
+            rho = msg["rho"]
+            s = torch.log1p(rho)
+            mean = m_sum / (1e-8 + rho).unsqueeze(-1)
+            m_sum = mean * (1e-8 + torch.exp(s) - 1.0).unsqueeze(-1)
         fuse_in = torch.cat([h, m_select, m_sum, torch.log1p(density).unsqueeze(-1)], dim=-1)
         h_out = h + self.fuse(fuse_in)
         return h_out, msg

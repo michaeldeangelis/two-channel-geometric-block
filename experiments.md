@@ -241,6 +241,34 @@ Ran on CPU after those rules were written. Record: `results/magnitude.json`. 480
 | Q − C | +0.029 | [+0.022, +0.036] | Q worse on 27/30 |
 | Q − N | −0.007 | [−0.011, −0.003] | Q better on 23/30 |
 
-Test NLL is 2.862 for C, 2.898 for N, and 2.891 for Q. Dividing by the gate mass hurts. Putting log(1+ρ) back helps a little and does not recover the sum. C already had that mass slot beside the sum, so Q versus C changes only the vector, from the sum to the mean. The mean and the mass determine the sum, and the fuse is an MLP, so the product is representable. The network did not use that product as well as the sum it was handed. That favors ease of optimization over a missing-information account.
+Test NLL is 2.862 for C, 2.898 for N, and 2.891 for Q. Dividing by the gate mass hurts. Putting log(1+ρ) back helps a little and does not recover the sum. C already had that mass slot beside the sum, so Q versus C changes only the vector, from the sum to the mean. The mean and the mass determine the sum, and the fuse is an MLP, so the product is representable. The trained mean-plus-mass model did not match the trained sum. That weakens an account in which the only difference is information the mean throws away.
 
 Whole-complex recovery is 0.107 for C, 0.094 for N, and 0.098 for Q. Interface NLL is 2.903, 2.933, and 2.932. The mass slot does not close the interface gap. Seeds were averaged before the cluster resample. The interval does not include retraining variation.
+
+The fusion layer receives s = log(1+ρ), not ρ itself. Rebuilding the sum is mean times (eps + exp(s) − 1).
+
+The inputs still determine the sum. A finite MLP has to learn that nonlinear map. Having the information and having an equally easy computation are different. Separately trained gates also need not match, because the aggregation changes the gradients into the gate. The result is about the whole training run.
+
+The claim this supports: in this architecture and training regime, directly supplying an unnormalized gated aggregate improves held-out likelihood relative to a normalized aggregate, even when gate mass remains available. It does not separate easier optimization, activation scale, implicit regularization, or generalization of the supplied product.
+
+## Stage 8 — the same substitution in a deeper encoder
+
+No further one-block variants. Three blocks, residue width 64, message width 64, mixer hidden 128. The only change is C versus Q: the sum, or the mean with log(1+ρ) kept. Same 400 steps, three seeds, and validation-NLL checkpoint. Whole-complex NLL is primary. Complexes already used as validation or test stay out of this test. The interval is the same 95% cluster bootstrap.
+
+A fixed trained one-block C is also checked: replace its sum by the mean and the explicit reconstruction above, and compare logits. The tolerance is 1e-4 absolute. The magnitude run did not save weights, so this check fits one seed on that same locked split and then does not fit again.
+
+Ran on CPU after those rules were written. Record: `results/deep.json` and `results/reconstruct.json`.
+
+The reconstruction check used seed 0 of the one-block C, checkpoint step 300. Across 128,600 test logits the largest absolute difference was 8.3e-7, and the mean absolute difference was 5.4e-8. Rebuilding the sum from the mean and log mass matches the implemented sum inside the masking and fusion code. The training gap is not an algebraic mismatch.
+
+The deeper run locked 429 train / 21 validation / 30 test from the same 480 heterodimers. All 30 test clusters are singletons. None of them was in an earlier validation or test split. Worst cross-partition identity 0.277. C and Q each have 203,034 parameters.
+
+| Comparison | Effect on NLL | 95% cluster interval | Clusters |
+|---|---|---|---|
+| Q − C | +0.012 | [+0.004, +0.021] | Q worse on 21/30 |
+
+Test NLL is 2.858 for the sum and 2.870 for the mean plus mass. Whole-complex recovery is 0.113 and 0.112. Interface NLL is 2.872 and 2.895; the paired interface gap is +0.023 with interval [+0.004, +0.040], and the mean is worse on 21/30. Recovery’s interval includes zero, [−0.006, +0.004]. Recovery is not separated. Seeds were averaged first. The interval does not include retraining or a new partition.
+
+C’s three seeds all checkpointed at step 350, with validation NLL higher at step 400. Two Q seeds were still best at step 400. The comparison retrains both aggregations, so the gates need not match. The 0.012 nat gap is a training result. It is smaller than the 0.029 nat gap for the same substitution in the one-block model, on a different locked split, and the interval still excludes zero.
+
+The advantage of supplying the unnormalized aggregate survives a deeper encoder. It does not say which of optimization, scale, regularization, or generalization produces it.

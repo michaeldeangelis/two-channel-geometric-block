@@ -32,6 +32,38 @@ def _std(xs: list[float]) -> float:
     return math.sqrt(sum((x - mean) ** 2 for x in xs) / max(len(xs) - 1, 1))
 
 
+class StackedFolder(torch.nn.Module):
+    """Several gated blocks. Aggregation is still the only difference between variants."""
+
+    def __init__(self, variant: str, hidden: int, geometry: bool = True, depth: int = 3, h_dim: int = 64, msg: int = 64):
+        super().__init__()
+        self.geometry = geometry
+        self.depth = depth
+        self.lift = torch.nn.Linear(H_NODE, h_dim)
+        self.blocks = torch.nn.ModuleList(
+            TwoChannelBlock(h_dim, msg, msg, hidden, variant, radius=RADIUS_A) for _ in range(depth)
+        )
+        self.aa = torch.nn.Linear(h_dim, len(AA))
+
+    def logits(self, pos, mask, chain, resseq) -> torch.Tensor:
+        if not self.geometry:
+            pos = torch.zeros_like(pos)
+        ang = (2 * math.pi) * resseq / 32.0
+        node = torch.stack(
+            [
+                torch.ones_like(resseq),
+                torch.sin(ang),
+                torch.cos(ang),
+                chain.to(resseq.dtype),
+            ],
+            dim=-1,
+        )
+        h = self.lift(node) * mask.unsqueeze(-1).to(node.dtype)
+        for block in self.blocks:
+            h, _ = block.encode(h, pos, mask, chain=chain, resseq=resseq)
+        return self.aa(h)
+
+
 class InverseFolder(torch.nn.Module):
     def __init__(self, variant: str, hidden: int, geometry: bool = True):
         super().__init__()

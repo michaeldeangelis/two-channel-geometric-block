@@ -97,6 +97,26 @@ def _xy(comp: dict):
     return batch["pos"], batch["mask"], batch["chain"], batch["resseq"]
 
 
+def test_log_mass_reconstruction_matches_logits() -> None:
+    from inverse_fold import InverseFolder
+
+    torch.manual_seed(1)
+    model = InverseFolder("C", 32)
+    model.eval()
+    pos = torch.randn(2, 9, 3) * 8
+    mask = torch.ones(2, 9, dtype=torch.bool)
+    chain = torch.zeros(2, 9, dtype=torch.long)
+    chain[:, 5:] = 1
+    resseq = torch.arange(9).float().view(1, -1).expand(2, -1)
+    with torch.no_grad():
+        base = model.logits(pos, mask, chain, resseq)
+        model.block.reconstruct = True
+        rebuilt = model.logits(pos, mask, chain, resseq)
+    gap = (base - rebuilt).abs().max()
+    if float(gap) > 1e-4:
+        raise AssertionError(float(gap))
+
+
 def test_normalized_mean_reconstructs_the_gated_sum() -> None:
     from block import TwoChannelBlock
 
@@ -137,6 +157,7 @@ def main() -> None:
     test_frequency_baseline_uses_the_training_mode()
     test_cluster_interval_is_constant_when_every_cluster_agrees()
     test_normalized_mean_reconstructs_the_gated_sum()
+    test_log_mass_reconstruction_matches_logits()
     print("scale checks passed")
 
 
