@@ -1,0 +1,384 @@
+{
+  "task": "frame-edge gated sum versus ProteinMPNN native recovery",
+  "proteinmpnn": {
+    "checkpoint": "vanilla v_48_020",
+    "soluble": false,
+    "unconditional": "argmax over 20 amino acids, no amino-acid context",
+    "sampled": "8 sequences at temperature 0.1, seed 10000+index",
+    "mean_unconditional": 0.4764622723062833,
+    "mean_sampled": 0.46574354109664756,
+    "rows": [
+      {
+        "id": "9S93",
+        "n": 231,
+        "unconditional": 0.48917749524116516,
+        "sampled": 0.47132034599781036,
+        "unconditional_interface": 0.2777777910232544
+      },
+      {
+        "id": "9S83",
+        "n": 163,
+        "unconditional": 0.6073619723320007,
+        "sampled": 0.5812883377075195,
+        "unconditional_interface": 0.5
+      },
+      {
+        "id": "9K9P",
+        "n": 132,
+        "unconditional": 0.469696968793869,
+        "sampled": 0.43560606241226196,
+        "unconditional_interface": 0.5882353186607361
+      },
+      {
+        "id": "8G4B",
+        "n": 244,
+        "unconditional": 0.4549180269241333,
+        "sampled": 0.4651639387011528,
+        "unconditional_interface": 0.4166666567325592
+      },
+      {
+        "id": "9V8I",
+        "n": 215,
+        "unconditional": 0.5069767236709595,
+        "sampled": 0.5406976789236069,
+        "unconditional_interface": 0.3571428656578064
+      },
+      {
+        "id": "9EJW",
+        "n": 286,
+        "unconditional": 0.4615384638309479,
+        "sampled": 0.4479895122349262,
+        "unconditional_interface": 0.40740740299224854
+      },
+      {
+        "id": "9K7U",
+        "n": 190,
+        "unconditional": 0.5684210658073425,
+        "sampled": 0.558552622795105,
+        "unconditional_interface": 0.42500001192092896
+      },
+      {
+        "id": "9NLT",
+        "n": 159,
+        "unconditional": 0.44025155901908875,
+        "sampled": 0.44811320677399635,
+        "unconditional_interface": 0.5116279125213623
+      },
+      {
+        "id": "9JM8",
+        "n": 130,
+        "unconditional": 0.6384615302085876,
+        "sampled": 0.6259615570306778,
+        "unconditional_interface": 0.47999998927116394
+      },
+      {
+        "id": "9R84",
+        "n": 252,
+        "unconditional": 0.4325396716594696,
+        "sampled": 0.4394841231405735,
+        "unconditional_interface": 0.3571428656578064
+      },
+      {
+        "id": "9R2Z",
+        "n": 157,
+        "unconditional": 0.36942675709724426,
+        "sampled": 0.3622611463069916,
+        "unconditional_interface": 0.4285714328289032
+      },
+      {
+        "id": "9CI7",
+        "n": 199,
+        "unconditional": 0.42211055755615234,
+        "sampled": 0.420226126909256,
+        "unconditional_interface": 0.3684210479259491
+      },
+      {
+        "id": "9ILR",
+        "n": 197,
+        "unconditional": 0.4467005133628845,
+        "sampled": 0.44416244328022003,
+        "unconditional_interface": 0.4262295067310333
+      },
+      {
+        "id": "8Y77",
+        "n": 137,
+        "unconditional": 0.5474452376365662,
+        "sampled": 0.5510948896408081,
+        "unconditional_interface": 0.6666666865348816
+      },
+      {
+        "id": "9JU1",
+        "n": 140,
+        "unconditional": 0.44999998807907104,
+        "sampled": 0.4392857104539871,
+        "unconditional_interface": 0.3529411852359772
+      },
+      {
+        "id": "8S2M",
+        "n": 260,
+        "unconditional": 0.4423076808452606,
+        "sampled": 0.42788461595773697,
+        "unconditional_interface": 0.4693877696990967
+      },
+      {
+        "id": "9BK6",
+        "n": 161,
+        "unconditional": 0.5776397585868835,
+        "sampled": 0.54347825050354,
+        "unconditional_interface": 0.6000000238418579
+      },
+      {
+        "id": "8WHM",
+        "n": 128,
+        "unconditional": 0.28125,
+        "sampled": 0.2314453125,
+        "unconditional_interface": 0.20930232107639313
+      },
+      {
+        "id": "8OWS",
+        "n": 239,
+        "unconditional": 0.47280335426330566,
+        "sampled": 0.4524058625102043,
+        "unconditional_interface": 0.37837839126586914
+      },
+      {
+        "id": "8PDC",
+        "n": 252,
+        "unconditional": 0.4682539701461792,
+        "sampled": 0.4613095223903656,
+        "unconditional_interface": 0.4137931168079376
+      },
+      {
+        "id": "8WT4",
+        "n": 289,
+        "unconditional": 0.5536332130432129,
+        "sampled": 0.5488754287362099,
+        "unconditional_interface": 0.5
+      },
+      {
+        "id": "8RGI",
+        "n": 234,
+        "unconditional": 0.4059829115867615,
+        "sampled": 0.370726503431797,
+        "unconditional_interface": 0.45945945382118225
+      },
+      {
+        "id": "8UH1",
+        "n": 199,
+        "unconditional": 0.4522612988948822,
+        "sampled": 0.4466080404818058,
+        "unconditional_interface": 0.5384615659713745
+      },
+      {
+        "id": "8R7A",
+        "n": 187,
+        "unconditional": 0.47593581676483154,
+        "sampled": 0.4639037474989891,
+        "unconditional_interface": 0.5853658318519592
+      }
+    ]
+  },
+  "nll_mean_abs_drift": 0.0,
+  "frame_mean": 0.23136087755362192,
+  "difference": {
+    "point": 0.24510139475266138,
+    "lo": 0.22137835394177172,
+    "hi": 0.26534481905400753,
+    "n_clusters": 24,
+    "resamples": 2000
+  },
+  "paired": [
+    {
+      "id": "9S93",
+      "frame": 0.19913419584433237,
+      "proteinmpnn": 0.48917749524116516,
+      "proteinmpnn_sampled": 0.47132034599781036,
+      "mpnn_minus_frame": 0.2900432993968328,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9S83",
+      "frame": 0.34355828166007996,
+      "proteinmpnn": 0.6073619723320007,
+      "proteinmpnn_sampled": 0.5812883377075195,
+      "mpnn_minus_frame": 0.2638036906719208,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9K9P",
+      "frame": 0.23232323427995047,
+      "proteinmpnn": 0.469696968793869,
+      "proteinmpnn_sampled": 0.43560606241226196,
+      "mpnn_minus_frame": 0.23737373451391855,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "8G4B",
+      "frame": 0.16666666666666666,
+      "proteinmpnn": 0.4549180269241333,
+      "proteinmpnn_sampled": 0.4651639387011528,
+      "mpnn_minus_frame": 0.28825136025746667,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9V8I",
+      "frame": 0.20930232604344687,
+      "proteinmpnn": 0.5069767236709595,
+      "proteinmpnn_sampled": 0.5406976789236069,
+      "mpnn_minus_frame": 0.2976743976275126,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9EJW",
+      "frame": 0.20512820283571878,
+      "proteinmpnn": 0.4615384638309479,
+      "proteinmpnn_sampled": 0.4479895122349262,
+      "mpnn_minus_frame": 0.2564102609952291,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9K7U",
+      "frame": 0.3947368363539378,
+      "proteinmpnn": 0.5684210658073425,
+      "proteinmpnn_sampled": 0.558552622795105,
+      "mpnn_minus_frame": 0.17368422945340473,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9NLT",
+      "frame": 0.22851153214772543,
+      "proteinmpnn": 0.44025155901908875,
+      "proteinmpnn_sampled": 0.44811320677399635,
+      "mpnn_minus_frame": 0.2117400268713633,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9JM8",
+      "frame": 0.39743590354919434,
+      "proteinmpnn": 0.6384615302085876,
+      "proteinmpnn_sampled": 0.6259615570306778,
+      "mpnn_minus_frame": 0.2410256266593933,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9R84",
+      "frame": 0.2063492089509964,
+      "proteinmpnn": 0.4325396716594696,
+      "proteinmpnn_sampled": 0.4394841231405735,
+      "mpnn_minus_frame": 0.2261904627084732,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9R2Z",
+      "frame": 0.20594480137030283,
+      "proteinmpnn": 0.36942675709724426,
+      "proteinmpnn_sampled": 0.3622611463069916,
+      "mpnn_minus_frame": 0.16348195572694144,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9CI7",
+      "frame": 0.1959798981746038,
+      "proteinmpnn": 0.42211055755615234,
+      "proteinmpnn_sampled": 0.420226126909256,
+      "mpnn_minus_frame": 0.22613065938154855,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9ILR",
+      "frame": 0.17258883019288382,
+      "proteinmpnn": 0.4467005133628845,
+      "proteinmpnn_sampled": 0.44416244328022003,
+      "mpnn_minus_frame": 0.2741116831700007,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "8Y77",
+      "frame": 0.2433089961608251,
+      "proteinmpnn": 0.5474452376365662,
+      "proteinmpnn_sampled": 0.5510948896408081,
+      "mpnn_minus_frame": 0.30413624147574103,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9JU1",
+      "frame": 0.20000000298023224,
+      "proteinmpnn": 0.44999998807907104,
+      "proteinmpnn_sampled": 0.4392857104539871,
+      "mpnn_minus_frame": 0.2499999850988388,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "8S2M",
+      "frame": 0.20000000298023224,
+      "proteinmpnn": 0.4423076808452606,
+      "proteinmpnn_sampled": 0.42788461595773697,
+      "mpnn_minus_frame": 0.24230767786502838,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "9BK6",
+      "frame": 0.25465838611125946,
+      "proteinmpnn": 0.5776397585868835,
+      "proteinmpnn_sampled": 0.54347825050354,
+      "mpnn_minus_frame": 0.3229813724756241,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "8WHM",
+      "frame": 0.203125,
+      "proteinmpnn": 0.28125,
+      "proteinmpnn_sampled": 0.2314453125,
+      "mpnn_minus_frame": 0.078125,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "8OWS",
+      "frame": 0.19804742435614267,
+      "proteinmpnn": 0.47280335426330566,
+      "proteinmpnn_sampled": 0.4524058625102043,
+      "mpnn_minus_frame": 0.274755929907163,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "8PDC",
+      "frame": 0.25264551242192584,
+      "proteinmpnn": 0.4682539701461792,
+      "proteinmpnn_sampled": 0.4613095223903656,
+      "mpnn_minus_frame": 0.21560845772425336,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "8WT4",
+      "frame": 0.21107266346613565,
+      "proteinmpnn": 0.5536332130432129,
+      "proteinmpnn_sampled": 0.5488754287362099,
+      "mpnn_minus_frame": 0.34256054957707727,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "8RGI",
+      "frame": 0.18233618636926016,
+      "proteinmpnn": 0.4059829115867615,
+      "proteinmpnn_sampled": 0.370726503431797,
+      "mpnn_minus_frame": 0.2236467252175013,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "8UH1",
+      "frame": 0.2127303183078766,
+      "proteinmpnn": 0.4522612988948822,
+      "proteinmpnn_sampled": 0.4466080404818058,
+      "mpnn_minus_frame": 0.23953098058700562,
+      "nll_drift": 0.0
+    },
+    {
+      "id": "8R7A",
+      "frame": 0.2370766500631968,
+      "proteinmpnn": 0.47593581676483154,
+      "proteinmpnn_sampled": 0.4639037474989891,
+      "mpnn_minus_frame": 0.23885916670163473,
+      "nll_drift": 0.0
+    }
+  ]
+}

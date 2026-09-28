@@ -13,7 +13,13 @@ abstract: >-
   and the uncertainty range includes no difference. I kept the sum because
   it was better in earlier, weaker versions of this block. I did not show
   that the frames erased that earlier advantage. A chain split and a hybrid
-  that also used attention were tried and dropped.
+  that also used attention were tried and dropped. On those same 24 families
+  I compared this model with ProteinMPNN. Both named residues from the
+  backbone, and neither was given the native sequence. ProteinMPNN got 0.476
+  of the residues right. This model got 0.231. The difference was 0.245,
+  with a range from 0.221 to 0.265, and ProteinMPNN was ahead on every
+  family. ProteinMPNN was trained on a much larger set and may have seen
+  related proteins. This model is not a competitive inverse folder.
 type: software
 authors:
   - family-names: DeAngelis

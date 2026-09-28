@@ -2,11 +2,13 @@
 
 ## Abstract
 
-I trained a small network to name each amino acid in a two-chain protein from backbone geometry, with the sequence itself hidden. Describing each neighbor with a local backbone frame, rather than a single distance, beat a guess based only on how common each amino acid is. On 24 separate protein families that gain was 0.395 nats: about 48% higher geometric-mean probability of the correct residue, and about 33% lower perplexity, on every family. Adding the neighbor messages up did not separate from averaging them while keeping their total weight. That gap was 0.009 nats, and the uncertainty range includes no difference. I kept the sum because it was better in earlier, weaker versions of this block. I did not show that the frames erased that earlier advantage. A chain split and a hybrid that also used attention were tried and dropped.
+I trained a small network to name each amino acid in a two-chain protein from backbone geometry, with the sequence itself hidden. Describing each neighbor with a local backbone frame, rather than a single distance, beat a guess based only on how common each amino acid is. On 24 separate protein families that gain was 0.395 nats: about 48% higher geometric-mean probability of the correct residue, and about 33% lower perplexity, on every family. Adding the neighbor messages up did not separate from averaging them while keeping their total weight. That gap was 0.009 nats, and the uncertainty range includes no difference. I kept the sum because it was better in earlier, weaker versions of this block. I did not show that the frames erased that earlier advantage. A chain split and a hybrid that also used attention were tried and dropped. On those same 24 families I compared this model with ProteinMPNN. Both named residues from the backbone, and neither was given the native sequence. ProteinMPNN got 0.476 of the residues right. This model got 0.231. The difference was 0.245, with a range from 0.221 to 0.265, and ProteinMPNN was ahead on every family. ProteinMPNN was trained on a much larger set and may have seen related proteins. This model is not a competitive inverse folder.
 
 On 24 new singleton families, the gated sum and the mean plus log mass are still not separated. The gap is 0.009 nats. A 95% cluster interval is −0.001 to +0.018, and the mean plus mass is worse on 17 of 24. Every test cluster has one complex, so the cluster-weighted mean and the complex-weighted mean are the same number. The sum stays the working aggregation because of the earlier results. This run does not show that it won.
 
 The same frame-edge model beats training-set frequencies by 0.395 nats on those families, interval 0.361 to 0.432, better on 24 of 24. That raises the geometric mean of the correct-residue probabilities by exp(0.395) ≈ 1.484, about 48.4% higher. Perplexity falls by exp(−0.395) ≈ 0.674, about 32.6% lower. Those two percentages are not the same. The budget was 800 steps, set from the earlier validation curves before this test was scored. One sum seed and two mean-plus-mass seeds are still best at step 800. The run stops. Record: `results/families.json`.
+
+On the same 24 families, vanilla ProteinMPNN (`v_48_020`) recovers 0.476 of native residues from backbone coordinates alone. The frame model recovers 0.231. ProteinMPNN minus the frame model is +0.245, interval +0.221 to +0.265, ProteinMPNN ahead on 24 of 24. The frame recovery was recomputed with the locked training rule, and the recomputed NLL matched the stored run with drift 0. Eight ProteinMPNN sequences at temperature 0.1 recovered 0.466, also ahead on 24 of 24. That sample is autoregressive. The unconditional number is the matched comparison, because neither model sees an amino acid it did not predict. ProteinMPNN may have been trained on homologs of these complexes. SolubleMPNN was not run. This is not a SolubleMPNN result. Record: `results/reference.json`.
 
 The definition is in [hypothesis.md](hypothesis.md). The decision rule and the reading of each result are in [experiments.md](experiments.md).
 
@@ -105,9 +107,10 @@ python run_deep.py
 python run_deep_budget.py
 python run_strong.py
 python run_families.py
+python run_reference.py
 ```
 
-CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0. Inverse-folding scripts download PDB files into `data/`, which is gitignored. A locked split file is reused when it is already present. `check_reconstruct.py` needs the magnitude lock. `run_deep.py` needs the earlier locks so it can keep those complexes out of the test. `run_deep_budget.py` reuses the deep lock and does not make a new split. `run_strong.py` reads N, CA, and C from those PDB files and keeps every earlier validation and test complex out of its test. `run_families.py` appends heterodimers released after 2022-06-01 and holds out new clusters only.
+CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0. Inverse-folding scripts download PDB files into `data/`, which is gitignored. A locked split file is reused when it is already present. `check_reconstruct.py` needs the magnitude lock. `run_deep.py` needs the earlier locks so it can keep those complexes out of the test. `run_deep_budget.py` reuses the deep lock and does not make a new split. `run_strong.py` reads N, CA, and C from those PDB files and keeps every earlier validation and test complex out of its test. `run_families.py` appends heterodimers released after 2022-06-01 and holds out new clusters only. `run_reference.py` needs a [ProteinMPNN](https://github.com/dauparas/ProteinMPNN) checkout at `data/ProteinMPNN` or `./ProteinMPNN`, with the vanilla `v_48_020` weights. It scores those 24 backbones and retrains the gated sum only to recover the test recovery that was not stored. It stops if the recomputed NLL drifts from `results/families.json` by more than 0.01 nat.
 
 ## Layout
 
@@ -120,6 +123,7 @@ CPU is enough. Python 3.10 or newer. The numbers above used PyTorch 2.14.0. Inve
 | `frames.py` | Backbone-frame edge features |
 | `run_strong.py` | Frame edges, composition gate, then sum versus mean-plus-mass |
 | `run_families.py` | That aggregation question on 24 new singleton families |
+| `run_reference.py` | Native recovery of that model against ProteinMPNN |
 | `check_reconstruct.py` | Fixed-checkpoint logit comparison |
 | `run_magnitude.py` | One-block sum versus mean on a fresh locked test |
 | `run_confirm.py` | Locked gated-sum versus softmax confirmation |

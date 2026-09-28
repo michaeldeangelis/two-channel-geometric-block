@@ -348,3 +348,33 @@ Ran on CPU after those rules were written. Record: `results/families.json`. The 
 Test NLL is 2.508 for the sum, 2.517 for the mean plus mass, and 2.903 for frequencies. The difference of those averages is the paired difference, 0.009 nat. The aggregation interval includes zero, so the comparison stays unresolved. The sum remains the working aggregation on the earlier evidence. This does not show that frame features removed that earlier advantage.
 
 The frequency gap of 0.395 nats raises the geometric mean of the correct-residue probabilities by exp(0.395) ≈ 1.484, about 48.4% higher. Perplexity falls by exp(−0.395) ≈ 0.674, about 32.6% lower. Selected steps are 800, 750, and 750 for the sum, and 800, 800, and 750 for the mean plus mass. One sum seed and two mean-plus-mass seeds are still best at step 800. The run stops.
+
+## Stage 11 — native recovery against ProteinMPNN
+
+The aggregation comparison on the 24 families is closed. The frame-edge gated sum is the working inverse folder. The question is whether that folder recovers native sequence at a level comparable to ProteinMPNN, on those same backbones.
+
+Rules written before either recovery is computed.
+
+The 24 complexes stay the test. Nothing is retuned on them. The frame model is the gated sum already specified for that split: depth 3, width 128, 800 steps, seeds 0, 1, and 2, checkpoint equal to the lowest unweighted mean of per-complex validation NLL. Test recovery was not stored. It is recomputed with that same training rule. The recomputed per-complex NLL has to match the locked value in `results/families.json`. If the mean absolute difference exceeds 0.01 nat, the recovery is not reported.
+
+ProteinMPNN is the vanilla `v_48_020` checkpoint. SolubleMPNN is a different model and is not run. The structure passed in is the same residues the frame model saw, with crystal N, CA, C, and O. Residue numbers are rewritten as a contiguous count within each chain so the parser does not insert gap residues. Both chains are designed. No native amino acid is given to the decoder.
+
+The primary ProteinMPNN number is the argmax of its coordinate-conditioned probabilities. That is the unconditional pass, which does not see any amino acid, and the argmax is over the 20 amino acids. That matches the frame model's argmax. The secondary number is the mean recovery of eight sequences sampled at temperature 0.1, seed 0. That sample is autoregressive, so later residues see amino acids the model already chose. It is the design-time temperature, and it is not the matched task.
+
+Interface recovery, using the same 8 Å contact definition as the frame model, is stored and is not a primary endpoint.
+
+Each complex gets one vote. The frame number averages the three seeds inside a complex, then averages the 24 complexes. The paired difference is ProteinMPNN unconditional recovery minus frame recovery, with the same 95% cluster bootstrap. Every test cluster has size 1, so that mean is also the complex-weighted mean.
+
+ProteinMPNN was trained on a large set that may include homologs of these complexes. That favors ProteinMPNN. The autoregressive sample has a second advantage the unconditional number does not: amino-acid context. This is not a SolubleMPNN result. No interface-confidence cutoff is applied.
+
+Reading, fixed before the run. If the interval on ProteinMPNN minus frame lies entirely above zero, ProteinMPNN recovers more native sequence on these families, and the frame model is not a competitive inverse folder here. The frame-versus-frequency result stays a result about this block. If the interval lies entirely below zero, the frame model recovers more. If the interval includes zero, the two unconditional recoveries are not separated on these 24 complexes. None of those readings says this block can stand in for a production inverse folder.
+
+Ran on CPU after those rules were written. Record: `results/reference.json`. The recomputed validation NLL matched the locked run on every recorded step, and the test NLL matched as well. Both drifts are 0. Selected steps are again 800, 750, and 750, so this is the locked model, not a new fit.
+
+| Comparison | Recovery | 95% cluster interval | Complexes |
+|---|---|---|---|
+| ProteinMPNN − frame | +0.245 | [+0.221, +0.265] | ProteinMPNN ahead on 24/24 |
+
+Frame recovery is 0.231. ProteinMPNN's coordinate-conditioned recovery is 0.476. The interval lies entirely above zero, so ProteinMPNN recovers more native sequence on these families. The frame model is not a competitive inverse folder here. The frame-versus-frequency result stays a result about this block.
+
+Eight sequences at temperature 0.1 recovered 0.466, also ahead on 24 of 24. That sample sees amino acids the model already chose, and on this set it did not recover more than the coordinate-only argmax. ProteinMPNN was trained on a large set that may include homologs of these complexes. SolubleMPNN was not run. This is not a SolubleMPNN result. Interface recovery was stored and is not an endpoint.
