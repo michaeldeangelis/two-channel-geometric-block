@@ -375,6 +375,10 @@ Ran on CPU after those rules were written. Record: `results/reference.json`. The
 |---|---|---|---|
 | ProteinMPNN − frame | +0.245 | [+0.221, +0.265] | ProteinMPNN ahead on 24/24 |
 
-Frame recovery is 0.231. ProteinMPNN's coordinate-conditioned recovery is 0.476. The interval lies entirely above zero, so ProteinMPNN recovers more native sequence on these families. The frame model is not a competitive inverse folder here. The frame-versus-frequency result stays a result about this block.
+Frame recovery is 0.231. ProteinMPNN's coordinate-conditioned recovery is 0.476. The interval lies entirely above zero. ProteinMPNN recovers 24.5 percentage points more native sequence, on every one of these 24 families. The frame-versus-frequency result stays a result about this block.
 
-Eight sequences at temperature 0.1 recovered 0.466, also ahead on 24 of 24. That sample sees amino acids the model already chose, and on this set it did not recover more than the coordinate-only argmax. ProteinMPNN was trained on a large set that may include homologs of these complexes. SolubleMPNN was not run. This is not a SolubleMPNN result. Interface recovery was stored and is not an endpoint.
+The test structures are the same, and neither model was given the native sequence. Training data, capacity, and possible homolog exposure are different. This is a matched evaluation. It is not a matched training comparison, and the gap is not attributed to the architecture.
+
+Eight sequences at temperature 0.1 recovered 0.466, also ahead on 24 of 24. The coordinate-only argmax recovered slightly more native residues than that sample. Native recovery and the quality of a generated sequence are different endpoints. SolubleMPNN was not run. This is not a SolubleMPNN result. Interface recovery was stored and is not an endpoint.
+
+This phase is closed. It began as a question about aggregation. The gated sum beat a normalized aggregate in the smaller encoders. Frame features then beat amino-acid frequencies by a wide margin, and inside that frame model the aggregation comparison stayed unresolved. The ProteinMPNN numbers measure the remaining distance on native recovery. A later experiment would put the aggregation substitution inside an established inverse folder and train both versions under the same conditions. Making this encoder larger is a different question.

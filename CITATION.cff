@@ -18,8 +18,13 @@ abstract: >-
   backbone, and neither was given the native sequence. ProteinMPNN got 0.476
   of the residues right. This model got 0.231. The difference was 0.245,
   with a range from 0.221 to 0.265, and ProteinMPNN was ahead on every
-  family. ProteinMPNN was trained on a much larger set and may have seen
-  related proteins. This model is not a competitive inverse folder.
+  family. The test structures match, and neither model was given the native
+  sequence. The training data, the model size, and the chance of seeing a
+  related protein do not match, so I do not pin that gap on the architecture.
+  The coordinate-only guess recovered slightly more native residues than
+  sequences drawn at temperature 0.1. Naming the native residue is a
+  different question from whether a new sequence would work in an
+  experiment. This phase is closed.
 type: software
 authors:
   - family-names: DeAngelis
